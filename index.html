@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resonance</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-idle layout-center cover-card vis-aurora font-manrope clock-auto">
+<div id="err"></div>
+<script>
+/* Ловим ошибки и показываем их мелким шрифтом в углу: в Wallpaper Engine нет консоли под рукой */
+(function () {
+  var seen = {};
+  function show(m) {
+    try {
+      m = String(m);
+      if (seen[m]) return; seen[m] = 1;
+      var box = document.getElementById('err');
+      if (!box) return;
+      box.style.display = 'block';
+      box.textContent = (box.textContent + '\n' + m).trim().slice(-1600);
+    } catch (e) {}
+  }
+  window.addEventListener('error', function (e) {
+    show('⚠ ' + (e.message || e) + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    show('⚠ ' + ((e.reason && e.reason.message) || e.reason));
+  });
+  window.RSN_ERR = show;
+})();
+</script>
+
+<canvas id="gl"></canvas>
+<div id="fallback"></div>
+
+<main id="stage">
+  <section id="player">
+    <div class="player-inner" id="playerInner">
+      <div class="art" id="art">
+        <div class="art-tilt" id="artTilt">
+          <div class="vinyl" id="vinyl">
+            <div class="vinyl-disc"></div>
+            <div class="vinyl-label" id="vinylLabel"><canvas id="vinylCanvas" width="320" height="320"></canvas></div>
+            <div class="vinyl-sheen"></div>
+          </div>
+          <div class="cover" id="cover">
+            <div class="cover-spin" id="coverSpin">
+              <canvas class="cover-canvas" id="coverA" width="8" height="8"></canvas>
+              <canvas class="cover-canvas" id="coverB" width="8" height="8"></canvas>
+            </div>
+            <div class="disc-deco"></div>
+            <div class="cover-sheen" id="coverSheen"></div>
+            <div class="cover-edge"></div>
+            <div class="ctl-hint" id="ctlHint">
+              <svg class="i-play" viewBox="0 0 24 24"><path d="M8.2 5.7v12.6a.9.9 0 0 0 1.38.76l9.9-6.3a.9.9 0 0 0 0-1.52l-9.9-6.3A.9.9 0 0 0 8.2 5.7z"/></svg>
+              <svg class="i-pause" viewBox="0 0 24 24"><rect x="6.6" y="5.2" width="3.9" height="13.6" rx="1.2"/><rect x="13.5" y="5.2" width="3.9" height="13.6" rx="1.2"/></svg>
+            </div>
+          </div>
+        </div>
+        <button class="ctl-arrow ctl-prev" id="ctlPrev" data-cmd="prev" type="button">
+          <svg viewBox="0 0 24 24"><path d="M6 5.5h2.2v13H6zM19 6.3v11.4a.85.85 0 0 1-1.3.7l-8.2-5.7a.85.85 0 0 1 0-1.4l8.2-5.7a.85.85 0 0 1 1.3.7z"/></svg>
+        </button>
+        <button class="ctl-arrow ctl-next" id="ctlNext" data-cmd="next" type="button">
+          <svg viewBox="0 0 24 24"><path d="M15.8 5.5H18v13h-2.2zM5 6.3v11.4a.85.85 0 0 0 1.3.7l8.2-5.7a.85.85 0 0 0 0-1.4L6.3 5.6A.85.85 0 0 0 5 6.3z"/></svg>
+        </button>
+      </div>
+
+      <div class="meta" id="meta">
+        <h1 class="title" id="title"></h1>
+        <div class="artist" id="artist"></div>
+        <div class="album" id="album"></div>
+        <div class="progress" id="progress">
+          <span class="time" id="tCur">0:00</span>
+          <div class="bar" id="pBar"><div class="bar-fill" id="pFill"></div><div class="bar-head" id="pHead"></div></div>
+          <span class="time" id="tDur">0:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="clock">
+    <div class="clock-time" id="clockTime"><span id="cH">00</span><span class="clock-colon">:</span><span id="cM">00</span><span class="clock-ap" id="cAp"></span></div>
+    <div class="clock-date" id="clockDate"></div>
+    <div class="clock-hint" id="clockHint"></div>
+  </section>
+
+  <div id="miniclock">
+    <div class="mc-time" id="mcTime">00:00</div>
+    <div class="mc-date" id="mcDate"></div>
+  </div>
+</main>
+
+<div id="demoHelp"></div>
+
+<script src="js/util.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/debug.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/media.js"></script>
+<script src="js/control.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/gl.js"></script>
+<script src="js/fluid.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/hq.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
