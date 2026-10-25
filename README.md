@@ -23,8 +23,11 @@
 
 ## Поддержать автора
 
-Обои бесплатные. Если хотите сказать спасибо — USDT в любой из сетей ниже.
-**Отправляйте только USDT и только в той сети, что указана рядом с адресом** — другие монеты или другая сеть могут потеряться.
+Обои бесплатные. Если хотите сказать спасибо:
+
+**Картой или по СБП:** [Boosty](https://boosty.to/pinkpanther1377/donate) · [DonationAlerts](https://www.donationalerts.com/r/strikegamesnews) · [DonateX](https://donatex.gg/donate/pinkpanther)
+
+**Криптой — USDT в любой из сетей ниже.** Отправляйте только USDT и только в той сети, что указана рядом с адресом — другие монеты или другая сеть могут потеряться.
 
 | Сеть | Адрес USDT |
 |---|---|
@@ -50,6 +53,6 @@ Music live wallpaper for [Wallpaper Engine](https://store.steampowered.com/app/4
 
 **Privacy:** the "Sharp covers" setting sends the track title and artist to Deezer and iTunes to find a larger cover. Nothing else is sent. You can turn it off.
 
-**Support the author:** the wallpaper is free. To say thanks, send USDT using one of the networks in the table above. **Send only USDT and only on the network listed next to the address** — other coins or another network may be lost.
+**Support the author:** the wallpaper is free. To say thanks: [Boosty](https://boosty.to/pinkpanther1377/donate) · [DonationAlerts](https://www.donationalerts.com/r/strikegamesnews) · [DonateX](https://donatex.gg/donate/pinkpanther), or USDT using one of the networks in the table above. **Send only USDT and only on the network listed next to the address** — other coins or another network may be lost.
 
 **License:** code — MIT, fonts — SIL OFL 1.1, third-party notices — THIRD-PARTY.txt.
