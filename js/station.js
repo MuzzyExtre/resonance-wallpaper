@@ -146,26 +146,37 @@
 
   /* ---------- «тень» трека ----------
      Музыка звучит из колонки, компьютер её не слышит. Помощник отдаёт тот же трек из Яндекс Музыки,
-     обои декодируют его (без звука) и в такт позиции колонки считают спектр так же, как демо
-     считает его для перетащенного файла: 64 полосы на канал, -90…-20 дБ */
-  const SR = 32000, N = 2048, HALF = N / 2, NB = 64;
+     обои декодируют его (без звука) и в такт позиции колонки считают спектр так, как его считает
+     сам Wallpaper Engine (откалибровано по его данным на одном и том же треке): окно Ханна 23 мс,
+     64 логарифмические полосы 96 Гц – 14,6 кГц, линейная амплитуда с усилением, растущим к верхам,
+     ~30 кадров в секунду без сглаживания. Тогда Станция и компьютер рисуют одинаково */
+  const SR = 32000, N = 1024, HALF = N / 2, NB = 64;
+  const WL = 743;                              // 1024 отсчёта при 44,1 кГц, как у WE, — это 743 при 32 кГц
+  const F0 = 96.4, RATIO = 1.0829;             // центры полос WE: F0 · RATIO^i
   const Sh = { id: '', token: 0, L: null, R: null, len: 0 };
   const rev = new Uint16Array(N), cosT = new Float32Array(HALF), sinT = new Float32Array(HALF), win = new Float32Array(N);
   const re = new Float32Array(N), im = new Float32Array(N);
   const magL = new Float32Array(HALF + 1), magR = new Float32Array(HALF + 1);
-  const smL = new Float32Array(HALF + 1), smR = new Float32Array(HALF + 1);
-  const edges = new Int16Array(NB + 1), out = new Float32Array(NB * 2);
+  const kLo = new Int16Array(NB), kHi = new Int16Array(NB), kAt = new Float32Array(NB), gain = new Float32Array(NB);
+  const out = new Float32Array(NB * 2);
+  const RSS = 1 / Math.sqrt(N / WL);           // дополнение нулями раздувает энергию полосы в N/WL раз
   (function () {
     const bits = Math.log2(N);
     for (let i = 0; i < N; i++) {
       let r = 0;
       for (let b = 0; b < bits; b++) r |= ((i >>> b) & 1) << (bits - 1 - b);
       rev[i] = r;
-      win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (N - 1));
+      win[i] = i < WL ? 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (WL - 1)) : 0;
     }
     for (let i = 0; i < HALF; i++) { cosT[i] = Math.cos(-2 * Math.PI * i / N); sinT[i] = Math.sin(-2 * Math.PI * i / N); }
-    const hz = SR / N;
-    for (let i = 0; i <= NB; i++) edges[i] = Math.max(1, Math.round(30 * Math.pow(16000 / 30, i / NB) / hz));
+    const hz = SR / N, half = Math.sqrt(RATIO);
+    for (let i = 0; i < NB; i++) {
+      const c = F0 * Math.pow(RATIO, i);
+      kLo[i] = Math.ceil(c / half / hz);
+      kHi[i] = Math.ceil(c * half / hz) - 1;
+      kAt[i] = c / hz;
+      gain[i] = Math.exp(-0.000488 * i * i + 0.08948 * i + 0.0483);
+    }
   })();
 
   function fft() {
@@ -204,44 +215,59 @@
         R[i] = y > 1 ? 32767 : y < -1 ? -32767 : y * 32767;
       }
       Sh.L = L; Sh.R = R; Sh.len = n;
-      smL.fill(0); smR.fill(0);
     } catch (e) {
       if (token === Sh.token) console.warn('station audio: ' + (e && e.message));
     }
   }
   function shadowDrop() { Sh.token++; Sh.id = ''; Sh.L = Sh.R = null; Sh.len = 0; }
 
-  /* вызывается каждый кадр: true — спектр подан вместо звука компьютера */
-  St.feed = function (audio) {
-    if (M.source !== 'station' || !Sh.len || M.state !== 'playing' || Sh.id !== clockId) return false;
-    const c = Math.round((clockNow() + St.offset) * SR) - HALF;
-    if (c + N < 0 || c >= Sh.len) return false;
-    const L = Sh.L, R = Sh.R;
+  /* спектр в формате WE (64 полосы левого канала, затем 64 правого) для момента pos, с */
+  function analyze(pos, L, R, len) {
+    const c = Math.round(pos * SR) - (WL >> 1);
+    if (c + WL < 0 || c >= len) return null;
     for (let i = 0; i < N; i++) {
       const k = c + i, w = win[i] / 32768;
-      if (k >= 0 && k < Sh.len) { re[i] = L[k] * w; im[i] = R[k] * w; } else re[i] = im[i] = 0;
+      if (w > 0 && k >= 0 && k < len) { re[i] = L[k] * w; im[i] = R[k] * w; } else re[i] = im[i] = 0;
     }
     fft();
     /* два канала одним преобразованием: левый — вещественная часть, правый — мнимая */
-    const inv = 1 / N;
+    const inv = 1 / WL;
     magL[0] = Math.abs(re[0]) * inv; magR[0] = Math.abs(im[0]) * inv;
     for (let k = 1; k <= HALF; k++) {
       const r1 = re[k], i1 = im[k], r2 = re[(N - k) % N], i2 = im[(N - k) % N];
       magL[k] = 0.5 * Math.hypot(r1 + r2, i1 - i2) * inv;
       magR[k] = 0.5 * Math.hypot(i1 + i2, r2 - r1) * inv;
     }
-    for (let k = 0; k <= HALF; k++) { smL[k] = 0.5 * smL[k] + 0.5 * magL[k]; smR[k] = 0.5 * smR[k] + 0.5 * magR[k]; }
     for (let ch = 0; ch < 2; ch++) {
-      const sm = ch ? smR : smL;
+      const mag = ch ? magR : magL;
       for (let i = 0; i < NB; i++) {
-        let m = 0;
-        for (let b = edges[i], e = Math.max(edges[i], edges[i + 1] - 1); b <= e && b <= HALF; b++) if (sm[b] > m) m = sm[b];
-        let v = (20 * Math.log10(m + 1e-9) + 90) / 70;
-        v = v < 0 ? 0 : v > 1 ? 1 : v;
-        out[ch * NB + i] = v * v * (1 - 0.5 * i / 63);
+        let v;
+        if (kHi[i] > kLo[i]) {                   // полоса шире двух бинов — её энергия
+          let e = 0;
+          for (let k = kLo[i]; k <= kHi[i]; k++) e += mag[k] * mag[k];
+          v = Math.sqrt(e) * RSS;
+        } else {                                  // узкая низкая полоса — значение на частоте центра
+          const k = kAt[i] | 0, fr = kAt[i] - k;
+          v = mag[k] * (1 - fr) + mag[k + 1] * fr;
+        }
+        out[ch * NB + i] = v * gain[i];
       }
     }
-    audio.ingest(out);
+    return out;
+  }
+  St._analyze = (L, R, pos) => analyze(pos, L, R, L.length);   // для проверки по данным WE
+
+  /* вызывается каждый кадр: true — визуализатор питается «тенью», звук компьютера не подмешиваем.
+     Спектр подаём ~30 раз в секунду, как присылает WE: тогда и детектор битов ведёт себя одинаково */
+  let fedAt = 0;
+  St.feed = function (audio) {
+    if (M.source !== 'station' || !Sh.len || M.state !== 'playing' || Sh.id !== clockId) return false;
+    const now = performance.now();
+    if (now - fedAt < 32) return true;
+    const arr = analyze(clockNow() + St.offset, Sh.L, Sh.R, Sh.len);
+    if (!arr) return false;
+    fedAt = now;
+    audio.ingest(arr);
     return true;
   };
 
