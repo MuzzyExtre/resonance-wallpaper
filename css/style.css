@@ -119,14 +119,11 @@ body.is-paused .player-inner {
 /* вертикальная посадка: оставляем место визуализатору снизу */
 body.layout-center .player-inner { margin-bottom: 15vh; }
 body.layout-center.vis-ring .player-inner,
-body.layout-center.vis-wall .player-inner,
 body.layout-center.vis-fluid .player-inner,
 body.layout-center.vis-none .player-inner { margin-bottom: 3vh; }
-body.layout-center.vis-ridge .player-inner,
-body.layout-center.vis-ridge2 .player-inner,
-body.layout-center.vis-ridge3 .player-inner { margin-bottom: 25vh; }
-body.layout-left.vis-ridge .player-inner, body.layout-left.vis-ridge2 .player-inner, body.layout-left.vis-ridge3 .player-inner,
-body.layout-right.vis-ridge .player-inner, body.layout-right.vis-ridge2 .player-inner, body.layout-right.vis-ridge3 .player-inner { margin-bottom: 18vh; }
+body.layout-center.vis-ridge .player-inner { margin-bottom: 25vh; }
+body.layout-left.vis-ridge .player-inner,
+body.layout-right.vis-ridge .player-inner { margin-bottom: 18vh; }
 body.layout-left.vis-aurora .player-inner, body.layout-right.vis-aurora .player-inner,
 body.layout-left.vis-bars .player-inner, body.layout-right.vis-bars .player-inner { margin-bottom: 8vh; }
 
@@ -387,8 +384,8 @@ body.ctl-on.is-paused .ctl-hint { opacity: .92; transform: none; }   /* на п�
   opacity: 0; visibility: hidden;
   transition: opacity 1s var(--ease-out), visibility 0s linear 1.2s;
 }
-body.vis-ring #clock, body.vis-none #clock, body.vis-fluid #clock, body.vis-wall #clock { padding-bottom: 2vh; }
-body.vis-ridge #clock, body.vis-ridge2 #clock, body.vis-ridge3 #clock { padding-bottom: 22vh; }
+body.vis-ring #clock, body.vis-none #clock, body.vis-fluid #clock { padding-bottom: 2vh; }
+body.vis-ridge #clock { padding-bottom: 22vh; }
 body.is-idle.clock-auto #clock,
 body.is-idle.clock-idle #clock {
   opacity: 1; visibility: visible;
@@ -476,6 +473,36 @@ body.font-unbounded .mc-time { font-size: calc(3vh * var(--ui)); }
   letter-spacing: .22em; text-transform: uppercase;
   color: rgb(255 255 255 / .56);
 }
+
+/* ---------- Яндекс Станция: вход по QR и состояние подключения ---------- */
+.station {
+  position: absolute; right: 3.6vw; bottom: 4.4vh; z-index: 30;
+  display: flex; align-items: center; gap: calc(1.8vh * var(--ui));
+  max-width: calc(48vh * var(--ui));
+  padding: calc(1.6vh * var(--ui)) calc(2.2vh * var(--ui)) calc(1.6vh * var(--ui)) calc(1.6vh * var(--ui));
+  border-radius: calc(2.2vh * var(--ui));
+  color: #fff; cursor: pointer; pointer-events: auto;
+  background: rgb(10 12 18 / .55);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / .12), 0 1.2vh 3.6vh rgb(0 0 0 / .35);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  opacity: 0; visibility: hidden; transform: translateY(1.2vh);
+  transition: opacity .6s var(--ease-out), transform .8s var(--ease-out), visibility 0s linear .8s;
+}
+.station.show {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity .6s var(--ease-out), transform .8s var(--ease-out), visibility 0s linear 0s;
+}
+.st-qr {
+  display: none; flex: none;
+  width: calc(20vh * var(--ui)); height: calc(20vh * var(--ui));
+  border-radius: calc(1.2vh * var(--ui)); image-rendering: pixelated;
+}
+.station.with-qr .st-qr { display: block; }
+.st-text { display: flex; flex-direction: column; gap: calc(.7vh * var(--ui)); min-width: 0; }
+.st-text b { font-size: calc(1.75vh * var(--ui)); font-weight: 700; }
+.st-text span { font-size: calc(1.4vh * var(--ui)); line-height: 1.45; color: rgb(255 255 255 / .76); }
+.st-text u { font-size: calc(1.3vh * var(--ui)); line-height: 1.4; color: rgb(255 255 255 / .55); text-underline-offset: .2em; }
+.st-text u:empty { display: none; }
 
 /* ---------- подсказка демо-режима (только в браузере) ---------- */
 #demoHelp {

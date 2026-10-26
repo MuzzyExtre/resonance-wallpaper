@@ -5,10 +5,13 @@
   "layout": {"type": "dropdown", "value": 0, "text": "Плеер", "items": ["В центре", "Слева", "Справа"]},
   "coverstyle": {"type": "dropdown", "value": 1, "text": "Обложка", "items": ["Карточка", "Винил", "Диск"]},
   "vinylcolor": {"type": "dropdown", "value": 0, "text": "Пластинка", "items": ["Чёрная", "Цветная"]},
-  "visualizer": {"type": "dropdown", "value": 0, "text": "Визуализатор", "items": ["Горизонт", "Горизонт+", "Горизонт+ широкий", "Стена", "Жидкий свет", "Аврора", "Кольцо", "Столбики", "Нет"]},
+  "visualizer": {"type": "dropdown", "value": 0, "text": "Визуализатор", "items": ["Горизонт", "Жидкий свет", "Аврора", "Кольцо", "Столбики", "Нет"]},
   "fluidmouse": {"type": "checkbox", "value": true, "text": "Курсор размешивает дым"},
   "fluidtrail": {"type": "slider", "value": 50, "min": 0, "max": 100, "step": 1, "text": "Длина шлейфов, %"},
   "ridgestyle": {"type": "dropdown", "value": 0, "text": "Рельеф", "items": ["Линии", "Сетка"]},
+  "ridgeglow": {"type": "slider", "value": 100, "min": 0, "max": 200, "step": 1, "text": "Свечение, %"},
+  "ridgemist": {"type": "checkbox", "value": true, "text": "Туман в низинах"},
+  "ridgesparks": {"type": "checkbox", "value": true, "text": "Искры"},
   "ridgesun": {"type": "checkbox", "value": false, "text": "Солнце"},
   "font": {"type": "dropdown", "value": 0, "text": "Шрифт", "items": ["Manrope", "Unbounded", "Playfair", "Системный"]},
   "uiscale": {"type": "slider", "value": 100, "min": 50, "max": 160, "step": 1, "text": "Размер плеера, %"},
@@ -34,5 +37,6 @@
   "showdate": {"type": "checkbox", "value": true, "text": "Дата"},
   "hqcovers": {"type": "checkbox", "value": true, "text": "Чёткие обложки (название трека ищется в Deezer и iTunes)"},
   "controls": {"type": "dropdown", "value": 0, "text": "Кнопки на обложке (нужна программа Resonance Control — ссылка в описании)", "items": ["При наведении", "Всегда", "Нет"]},
+  "station": {"type": "checkbox", "value": false, "text": "Яндекс Станция: трек и визуализация с колонки (нужна Resonance Control, вход по QR-коду)"},
   "quality": {"type": "dropdown", "value": 0, "text": "Качество", "items": ["Высокое", "Среднее", "Низкое"]}
 }

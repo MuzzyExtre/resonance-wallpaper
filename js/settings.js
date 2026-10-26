@@ -42,8 +42,12 @@
     controls: 'hover',
     ridgeStyle: 'lines',
     ridgeSun: false,
+    ridgeGlow: 1,
+    ridgeMist: true,
+    ridgeSparks: true,
     fluidMouse: true,
-    fluidTrail: 0.5
+    fluidTrail: 0.5,
+    station: false
   });
 
   RSN.fpsLimit = 0;
@@ -54,8 +58,8 @@
     layout:     { key: 'layout',     vals: { 1: 'center', 2: 'left', 3: 'right' }, lively: [1, 2, 3] },
     coverstyle: { key: 'coverStyle', vals: { 1: 'card', 2: 'vinyl', 3: 'disc' }, lively: [1, 2, 3] },
     vinylcolor: { key: 'vinylColor', vals: { 1: 'black', 2: 'color' }, lively: [1, 2] },
-    /* 5 — бывший Milkdrop: у кого он был выбран, получат «Жидкий свет» */
-    visualizer: { key: 'visualizer', vals: { 4: 'ridge', 7: 'ridge2', 8: 'ridge3', 9: 'wall', 6: 'fluid', 1: 'aurora', 2: 'ring', 3: 'bars', 5: 'fluid', 0: 'none' }, lively: [4, 7, 8, 9, 6, 1, 2, 3, 0] },
+    /* 5 — бывший Milkdrop («Жидкий свет»); 7, 8, 9 — бывшие «Горизонт+», «широкий» и «Стена» (теперь это «Горизонт») */
+    visualizer: { key: 'visualizer', vals: { 4: 'ridge', 7: 'ridge', 8: 'ridge', 9: 'ridge', 6: 'fluid', 1: 'aurora', 2: 'ring', 3: 'bars', 5: 'fluid', 0: 'none' }, lively: [4, 6, 1, 2, 3, 0] },
     idlebg:     { key: 'idleBg',     vals: { 1: 'last', 2: 'color' }, lively: [1, 2] },
     language:   { key: 'language',   vals: { 0: 'auto', 1: 'ru', 2: 'en' }, lively: [0, 1, 2] },
     controls:   { key: 'controls',   vals: { 1: 'hover', 2: 'always', 0: 'off' }, lively: [1, 2, 0] },
@@ -69,13 +73,13 @@
     uiscale: 'uiScale', offsetx: 'offsetX', offsety: 'offsetY',
     sensitivity: 'sensitivity', beatpulse: 'beatPulse',
     bgmotion: 'bgMotion', bgbrightness: 'bgBrightness', bgsaturation: 'bgSaturation',
-    particles: 'particles', grain: 'grain', fluidtrail: 'fluidTrail'
+    particles: 'particles', grain: 'grain', fluidtrail: 'fluidTrail', ridgeglow: 'ridgeGlow'
   };
   const BOOLS = {
     shockwaves: 'shockwaves', parallax: 'parallax', showcover: 'showCover', showinfo: 'showInfo',
     showalbum: 'showAlbum', showprogress: 'showProgress',
     clock24: 'clock24', showdate: 'showDate', hqcovers: 'hqCovers', debug: 'debug', ridgesun: 'ridgeSun',
-    fluidmouse: 'fluidMouse'
+    fluidmouse: 'fluidMouse', station: 'station', ridgemist: 'ridgeMist', ridgesparks: 'ridgeSparks'
   };
   const COLORS = { schemecolor: 'schemeColor', accentcolor: 'accentColor' };
 

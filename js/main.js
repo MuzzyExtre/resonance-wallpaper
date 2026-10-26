@@ -13,6 +13,7 @@
   let thumbToken = 0, genTimer = 0, lastWave = 0;
   let thumbImg = null, hqTimer = 0, hqToken = 0, hqFor = null, holdImg = null, holdTimer = 0;
   let lastPlayed = null;   // последний трек, который действительно играл — для кнопки «Продолжить»
+  let fromStation = false; // визуализатор питает «тень» трека Станции — звук компьютера не подмешиваем
 
   const audio = new RSN.AudioEngine();
   const ui = new RSN.UI();
@@ -111,7 +112,7 @@
     thumbImg = img;
     holdImg = null;
     clearTimeout(holdTimer);
-    const hq = S.hqCovers && RSN.hq;
+    const hq = S.hqCovers && RSN.hq && M.source !== 'station';   // у Станции обложка сразу большая
     try {
       if (!img) applyCover(P.generativeCover(M.title + '\u0000' + M.artist));
       else {
@@ -131,7 +132,7 @@
      в любом порядке, поэтому даём им немного устояться */
   function scheduleHQ() {
     clearTimeout(hqTimer);
-    if (!S.hqCovers || !RSN.hq) { releaseHold(); return; }
+    if (!S.hqCovers || !RSN.hq || M.source === 'station') { releaseHold(); return; }
     hqTimer = setTimeout(() => {
       const token = ++hqToken, title = M.title, artist = M.artist, ref = thumbImg;
       if (!title || !artist) { releaseHold(); return; }
@@ -164,7 +165,7 @@
 
   /* ---------- режим ---------- */
   function desiredMode() {
-    if (M.enabled === false) return 'idle';
+    if (M.enabled === false && M.source !== 'station') return 'idle';
     if (!(M.title || M.thumb)) return 'idle';
     if (M.state === 'stopped') return 'idle';
     if (M.state === 'paused') return 'paused';
@@ -209,14 +210,14 @@
     trace('track: ' + M.artist + ' — ' + M.title);
     notePlaying();
     ui.setTrack(M.title, M.artist, M.album);
-    if (S.hqCovers && RSN.hq) RSN.hq.prefetch(M.title, M.artist);
+    if (S.hqCovers && RSN.hq && M.source !== 'station') RSN.hq.prefetch(M.title, M.artist);
     /* у трека так и не появилось своей обложки — рисуем абстрактную */
     clearTimeout(genTimer);
     genTimer = setTimeout(() => { if (!M.thumbFresh) onThumb(''); }, 1200);
     scheduleHQ();
   });
   /* запоминаем трек, только пока он играет: на остановке WE может подсунуть чужой сеанс */
-  const notePlaying = () => { if (M.state === 'playing' && (M.title || M.artist)) lastPlayed = { title: M.title, artist: M.artist }; };
+  const notePlaying = () => { if (M.state === 'playing' && (M.title || M.artist)) lastPlayed = { title: M.title, artist: M.artist, source: M.source }; };
   M.on('state', () => { notePlaying(); updateMode(performance.now()); });
   const refreshHint = () => ui.setHint(M.enabled === false ? RSN.i18n.t('mediaHint') : '');
   M.on('status', refreshHint);
@@ -238,7 +239,15 @@
     }
     if (cmd === 'resume') {
       /* плеер закрыт или трек в нём уже другой — кнопка «качает головой» */
-      if (lastPlayed) RSN.control.resume(lastPlayed).then(ok => { if (!ok) ui.resumeFailed(); });
+      if (!lastPlayed) return;
+      const done = lastPlayed.source === 'station' && RSN.station ? RSN.station.cmd('play') : RSN.control.resume(lastPlayed);
+      done.then(ok => { if (!ok) ui.resumeFailed(); });
+      return;
+    }
+    /* на экране трек Станции — команды уходят колонке */
+    if (M.source === 'station' && RSN.station) {
+      if (cmd === 'seek') { RSN.station.cmd('seek', +arg); M.pos = +arg; M.stamp = performance.now(); }
+      else RSN.station.cmd(cmd);
       return;
     }
     if (cmd === 'seek') {
@@ -280,6 +289,8 @@
       if (RSN.onLanguage) RSN.onLanguage();
     }
     if (has('controls')) refreshControls();
+    if (has('station') && RSN.station) RSN.station.apply();
+    if (has('language') && RSN.station) RSN.station.relabel();
   });
   RSN.onPauseChange = paused => { if (!paused) last = performance.now(); };
 
@@ -296,7 +307,7 @@
   let audioReg = false;
   function registerAll() {
     if (!audioReg && typeof window.wallpaperRegisterAudioListener === 'function') {
-      try { window.wallpaperRegisterAudioListener(arr => audio.ingest(arr)); audioReg = true; }
+      try { window.wallpaperRegisterAudioListener(arr => { if (!fromStation) audio.ingest(arr); }); audioReg = true; }
       catch (e) { report('audio: ' + e.message); }
     }
     M.register();
@@ -307,7 +318,7 @@
     setTimeout(registerAll, 1500);
     setTimeout(registerAll, 4000);
   }
-  window.livelyAudioListener = arr => { RSN.inLively = true; audio.ingest(arr); };
+  window.livelyAudioListener = arr => { RSN.inLively = true; if (!fromStation) audio.ingest(arr); };
 
   /* страховка: если обои загрузились, пока WE стоял на паузе (игра на весь экран),
      стартовые медиа-события могли потеряться. Как только WE «ожил» (пошёл звук),
@@ -339,6 +350,7 @@
     const dt = U.clamp((now - last) / 1000, 0.0005, 0.1);
     last = now;
     try {
+      fromStation = !!(RSN.station && RSN.station.feed(audio));
       audio.update(dt);
       updateMode(now);
       stepPalette(dt);
@@ -355,7 +367,6 @@
         activity = U.damp(activity, audio.active && lv.energy + lv.bass > 0.03 ? 1 : 0, 1.5, dt);
         st.visAlpha = mode === 'idle' ? activity : Math.max(activity, 0.65);
         st.meta = ui.metaRect;
-        st.clock = ui.clockRect;
         gfx.render(dt, st);
       }
     } catch (e) {

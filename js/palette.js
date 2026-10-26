@@ -31,6 +31,7 @@
   function loadImage(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
+      if (/^https?:/i.test(src)) img.crossOrigin = 'anonymous';   // обложка Станции идёт через помощник — палитре нужен CORS
       img.decoding = 'async';
       img.onload = () => (img.naturalWidth ? resolve(img) : reject(new Error('empty image')));
       img.onerror = () => reject(new Error('image load failed'));

@@ -1,6 +1,6 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "Музыкальные обои: обложка и название трека из любого плеера (Яндекс Музыка, Spotify, браузер), фон из цветов обложки и визуализаторы звука — «Горизонт» с глубиной, светящийся дым и другие. Обложку, название и часы можно скрыть. Чёткие обложки ищутся в Deezer и iTunes по названию трека — это отключается.\nИсходный код и программа для кнопок на обложке — [url=https://github.com/MuzzyExtre/resonance-wallpaper]GitHub[/url].\nПоддержать автора: [url=https://boosty.to/pinkpanther1377/donate]Boosty[/url] · [url=https://www.donationalerts.com/r/strikegamesnews]DonationAlerts[/url] · [url=https://donatex.gg/donate/pinkpanther]DonateX[/url].\n\nMusic wallpaper: cover and track info from any player (Spotify, browsers, Yandex Music), a background made from the cover colors and audio visualizers — the deep Horizon, glowing smoke and more. Cover, title and clock can be hidden. Sharp covers are looked up on Deezer and iTunes by track name — this can be turned off.\nSource code and the cover-buttons app — [url=https://github.com/MuzzyExtre/resonance-wallpaper]GitHub[/url].\nSupport the author: [url=https://boosty.to/pinkpanther1377/donate]Boosty[/url] · [url=https://www.donationalerts.com/r/strikegamesnews]DonationAlerts[/url] · [url=https://donatex.gg/donate/pinkpanther]DonateX[/url].",
+	"description" : "Музыкальные обои: обложка и название трека из любого плеера (Яндекс Музыка, Spotify, браузер), фон из цветов обложки и визуализаторы звука — «Горизонт» с глубиной, светящийся дым и другие. Обложку, название и часы можно скрыть. Музыка на Яндекс Станции тоже показывается на экране — трек, обложка и визуализация (нужна программа Resonance Control). Чёткие обложки ищутся в Deezer и iTunes по названию трека — это отключается.\nИсходный код и программа Resonance Control (кнопки на обложке, Яндекс Станция) — [url=https://github.com/MuzzyExtre/resonance-wallpaper]GitHub[/url].\nПоддержать автора: [url=https://boosty.to/pinkpanther1377/donate]Boosty[/url] · [url=https://www.donationalerts.com/r/strikegamesnews]DonationAlerts[/url] · [url=https://donatex.gg/donate/pinkpanther]DonateX[/url].\n\nMusic wallpaper: cover and track info from any player (Spotify, browsers, Yandex Music), a background made from the cover colors and audio visualizers — the deep Horizon, glowing smoke and more. Cover, title and clock can be hidden. Music playing on a Yandex Station speaker shows up too — track, cover and visuals (needs the Resonance Control app). Sharp covers are looked up on Deezer and iTunes by track name — this can be turned off.\nSource code and the Resonance Control app (cover buttons, Yandex Station) — [url=https://github.com/MuzzyExtre/resonance-wallpaper]GitHub[/url].\nSupport the author: [url=https://boosty.to/pinkpanther1377/donate]Boosty[/url] · [url=https://www.donationalerts.com/r/strikegamesnews]DonationAlerts[/url] · [url=https://donatex.gg/donate/pinkpanther]DonateX[/url].",
 	"file" : "index.html",
 	"general" : 
 	{
@@ -67,6 +67,9 @@
 				"ui_rs_quality" : "Quality",
 				"ui_rs_ridge_grid" : "Grid",
 				"ui_rs_ridge_lines" : "Lines",
+				"ui_rs_ridgeglow" : "Glow, %",
+				"ui_rs_ridgemist" : "Valley mist",
+				"ui_rs_ridgesparks" : "Sparks",
 				"ui_rs_ridgestyle" : "Terrain",
 				"ui_rs_ridgesun" : "Sun",
 				"ui_rs_scheme" : "Background color",
@@ -77,6 +80,8 @@
 				"ui_rs_showdate" : "Date",
 				"ui_rs_showinfo" : "Title and artist",
 				"ui_rs_showprogress" : "Track progress",
+				"ui_rs_station" : "Yandex Station",
+				"ui_rs_station_help" : "<small>Track, cover and visuals from the speaker. Needs the same Resonance Control app; the first time, a QR code for the Yandex login appears in the corner.</small>",
 				"ui_rs_uiscale" : "Player size, %",
 				"ui_rs_vinyl_black" : "Black",
 				"ui_rs_vinyl_color" : "Colored",
@@ -87,10 +92,7 @@
 				"ui_rs_vis_fluid" : "Liquid light",
 				"ui_rs_vis_off" : "None",
 				"ui_rs_vis_ridge" : "Horizon",
-				"ui_rs_vis_ridge2" : "Horizon+",
-				"ui_rs_vis_ridge3" : "Horizon+ Wide",
-				"ui_rs_vis_ring" : "Ring",
-				"ui_rs_vis_wall" : "Wall"
+				"ui_rs_vis_ring" : "Ring"
 			},
 			"ru-ru" : 
 			{
@@ -153,6 +155,9 @@
 				"ui_rs_quality" : "Качество",
 				"ui_rs_ridge_grid" : "Сетка",
 				"ui_rs_ridge_lines" : "Линии",
+				"ui_rs_ridgeglow" : "Свечение, %",
+				"ui_rs_ridgemist" : "Туман в низинах",
+				"ui_rs_ridgesparks" : "Искры",
 				"ui_rs_ridgestyle" : "Рельеф",
 				"ui_rs_ridgesun" : "Солнце",
 				"ui_rs_scheme" : "Цвет фона",
@@ -163,6 +168,8 @@
 				"ui_rs_showdate" : "Дата",
 				"ui_rs_showinfo" : "Название и исполнитель",
 				"ui_rs_showprogress" : "Прогресс трека",
+				"ui_rs_station" : "Яндекс Станция",
+				"ui_rs_station_help" : "<small>Трек, обложка и визуализация с колонки. Нужна та же программа Resonance Control; при первом включении в углу появится QR-код для входа в Яндекс.</small>",
 				"ui_rs_uiscale" : "Размер плеера, %",
 				"ui_rs_vinyl_black" : "Чёрная",
 				"ui_rs_vinyl_color" : "Цветная",
@@ -173,10 +180,7 @@
 				"ui_rs_vis_fluid" : "Жидкий свет",
 				"ui_rs_vis_off" : "Нет",
 				"ui_rs_vis_ridge" : "Горизонт",
-				"ui_rs_vis_ridge2" : "Горизонт+",
-				"ui_rs_vis_ridge3" : "Горизонт+ широкий",
-				"ui_rs_vis_ring" : "Кольцо",
-				"ui_rs_vis_wall" : "Стена"
+				"ui_rs_vis_ring" : "Кольцо"
 			}
 		},
 		"properties" : 
@@ -184,15 +188,15 @@
 			"accentcolor" : 
 			{
 				"condition" : "accentmode.value == 2",
-				"index" : 15,
-				"order" : 115,
+				"index" : 18,
+				"order" : 118,
 				"text" : "ui_rs_accentcolor",
 				"type" : "color",
 				"value" : "0.62 0.52 1"
 			},
 			"accentmode" : 
 			{
-				"index" : 14,
+				"index" : 17,
 				"options" : 
 				[
 					{
@@ -204,47 +208,47 @@
 						"value" : 2
 					}
 				],
-				"order" : 114,
+				"order" : 117,
 				"text" : "ui_rs_accentmode",
 				"type" : "combo",
 				"value" : 1
 			},
 			"beatpulse" : 
 			{
-				"index" : 18,
+				"index" : 21,
 				"max" : 200,
 				"min" : 0,
-				"order" : 118,
+				"order" : 121,
 				"text" : "ui_rs_beatpulse",
 				"type" : "slider",
 				"value" : 100
 			},
 			"bgbrightness" : 
 			{
-				"index" : 24,
+				"index" : 27,
 				"max" : 200,
 				"min" : 20,
-				"order" : 124,
+				"order" : 127,
 				"text" : "ui_rs_bgbrightness",
 				"type" : "slider",
 				"value" : 100
 			},
 			"bgmotion" : 
 			{
-				"index" : 23,
+				"index" : 26,
 				"max" : 300,
 				"min" : 0,
-				"order" : 123,
+				"order" : 126,
 				"text" : "ui_rs_bgmotion",
 				"type" : "slider",
 				"value" : 100
 			},
 			"bgsaturation" : 
 			{
-				"index" : 25,
+				"index" : 28,
 				"max" : 200,
 				"min" : 0,
-				"order" : 125,
+				"order" : 128,
 				"text" : "ui_rs_bgsaturation",
 				"type" : "slider",
 				"value" : 100
@@ -252,15 +256,15 @@
 			"clock24" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 35,
-				"order" : 135,
+				"index" : 38,
+				"order" : 138,
 				"text" : "ui_rs_clock24",
 				"type" : "bool",
 				"value" : true
 			},
 			"clockmode" : 
 			{
-				"index" : 34,
+				"index" : 37,
 				"options" : 
 				[
 					{
@@ -276,14 +280,14 @@
 						"value" : 0
 					}
 				],
-				"order" : 134,
+				"order" : 137,
 				"text" : "ui_rs_clockmode",
 				"type" : "combo",
 				"value" : 1
 			},
 			"controls" : 
 			{
-				"index" : 39,
+				"index" : 42,
 				"options" : 
 				[
 					{
@@ -299,15 +303,15 @@
 						"value" : 0
 					}
 				],
-				"order" : 139,
+				"order" : 142,
 				"text" : "ui_rs_controls",
 				"type" : "combo",
 				"value" : 1
 			},
 			"controlshelp" : 
 			{
-				"index" : 40,
-				"order" : 140,
+				"index" : 43,
+				"order" : 143,
 				"text" : "ui_rs_controls_help",
 				"type" : "text"
 			},
@@ -336,8 +340,8 @@
 			},
 			"debug" : 
 			{
-				"index" : 43,
-				"order" : 143,
+				"index" : 48,
+				"order" : 148,
 				"text" : "ui_rs_debug",
 				"type" : "bool",
 				"value" : false
@@ -364,7 +368,7 @@
 			},
 			"font" : 
 			{
-				"index" : 10,
+				"index" : 13,
 				"options" : 
 				[
 					{
@@ -384,39 +388,39 @@
 						"value" : 4
 					}
 				],
-				"order" : 110,
+				"order" : 113,
 				"text" : "ui_rs_font",
 				"type" : "combo",
 				"value" : 1
 			},
 			"grain" : 
 			{
-				"index" : 27,
+				"index" : 30,
 				"max" : 100,
 				"min" : 0,
-				"order" : 127,
+				"order" : 130,
 				"text" : "ui_rs_grain",
 				"type" : "slider",
 				"value" : 30
 			},
 			"hdrbg" : 
 			{
-				"index" : 20,
-				"order" : 120,
+				"index" : 23,
+				"order" : 123,
 				"text" : "ui_rs_hdr_bg",
 				"type" : "text"
 			},
 			"hdrcontrol" : 
 			{
-				"index" : 38,
-				"order" : 138,
+				"index" : 41,
+				"order" : 141,
 				"text" : "ui_rs_hdr_control",
 				"type" : "text"
 			},
 			"hdrinfo" : 
 			{
-				"index" : 29,
-				"order" : 129,
+				"index" : 32,
+				"order" : 132,
 				"text" : "ui_rs_hdr_info",
 				"type" : "text"
 			},
@@ -429,29 +433,29 @@
 			},
 			"hdrperf" : 
 			{
-				"index" : 41,
-				"order" : 141,
+				"index" : 46,
+				"order" : 146,
 				"text" : "ui_rs_hdr_perf",
 				"type" : "text"
 			},
 			"hdrsound" : 
 			{
-				"index" : 16,
-				"order" : 116,
+				"index" : 19,
+				"order" : 119,
 				"text" : "ui_rs_hdr_sound",
 				"type" : "text"
 			},
 			"hqcovers" : 
 			{
-				"index" : 37,
-				"order" : 137,
+				"index" : 40,
+				"order" : 140,
 				"text" : "ui_rs_hqcovers",
 				"type" : "bool",
 				"value" : true
 			},
 			"idlebg" : 
 			{
-				"index" : 21,
+				"index" : 24,
 				"options" : 
 				[
 					{
@@ -463,7 +467,7 @@
 						"value" : 2
 					}
 				],
-				"order" : 121,
+				"order" : 124,
 				"text" : "ui_rs_idlebg",
 				"type" : "combo",
 				"value" : 1
@@ -516,45 +520,45 @@
 			},
 			"offsetx" : 
 			{
-				"index" : 12,
+				"index" : 15,
 				"max" : 40,
 				"min" : -40,
-				"order" : 112,
+				"order" : 115,
 				"text" : "ui_rs_offsetx",
 				"type" : "slider",
 				"value" : 0
 			},
 			"offsety" : 
 			{
-				"index" : 13,
+				"index" : 16,
 				"max" : 40,
 				"min" : -40,
-				"order" : 113,
+				"order" : 116,
 				"text" : "ui_rs_offsety",
 				"type" : "slider",
 				"value" : 0
 			},
 			"parallax" : 
 			{
-				"index" : 28,
-				"order" : 128,
+				"index" : 31,
+				"order" : 131,
 				"text" : "ui_rs_parallax",
 				"type" : "bool",
 				"value" : true
 			},
 			"particles" : 
 			{
-				"index" : 26,
+				"index" : 29,
 				"max" : 100,
 				"min" : 0,
-				"order" : 126,
+				"order" : 129,
 				"text" : "ui_rs_particles",
 				"type" : "slider",
 				"value" : 50
 			},
 			"quality" : 
 			{
-				"index" : 42,
+				"index" : 47,
 				"options" : 
 				[
 					{
@@ -570,14 +574,43 @@
 						"value" : 3
 					}
 				],
-				"order" : 142,
+				"order" : 147,
 				"text" : "ui_rs_quality",
 				"type" : "combo",
 				"value" : 1
 			},
+			"ridgeglow" : 
+			{
+				"condition" : "visualizer.value == 4",
+				"index" : 9,
+				"max" : 200,
+				"min" : 0,
+				"order" : 109,
+				"text" : "ui_rs_ridgeglow",
+				"type" : "slider",
+				"value" : 100
+			},
+			"ridgemist" : 
+			{
+				"condition" : "visualizer.value == 4",
+				"index" : 10,
+				"order" : 110,
+				"text" : "ui_rs_ridgemist",
+				"type" : "bool",
+				"value" : true
+			},
+			"ridgesparks" : 
+			{
+				"condition" : "visualizer.value == 4",
+				"index" : 11,
+				"order" : 111,
+				"text" : "ui_rs_ridgesparks",
+				"type" : "bool",
+				"value" : true
+			},
 			"ridgestyle" : 
 			{
-				"condition" : "visualizer.value == 4 || visualizer.value == 7 || visualizer.value == 8",
+				"condition" : "visualizer.value == 4",
 				"index" : 8,
 				"options" : 
 				[
@@ -597,9 +630,9 @@
 			},
 			"ridgesun" : 
 			{
-				"condition" : "visualizer.value == 4 || visualizer.value == 7 || visualizer.value == 8",
-				"index" : 9,
-				"order" : 109,
+				"condition" : "visualizer.value == 4",
+				"index" : 12,
+				"order" : 112,
 				"text" : "ui_rs_ridgesun",
 				"type" : "bool",
 				"value" : false
@@ -607,26 +640,26 @@
 			"schemecolor" : 
 			{
 				"condition" : "idlebg.value == 2",
-				"index" : 22,
-				"order" : 122,
+				"index" : 25,
+				"order" : 125,
 				"text" : "ui_rs_scheme",
 				"type" : "color",
 				"value" : "0.44 0.36 0.98"
 			},
 			"sensitivity" : 
 			{
-				"index" : 17,
+				"index" : 20,
 				"max" : 300,
 				"min" : 10,
-				"order" : 117,
+				"order" : 120,
 				"text" : "ui_rs_sensitivity",
 				"type" : "slider",
 				"value" : 100
 			},
 			"shockwaves" : 
 			{
-				"index" : 19,
-				"order" : 119,
+				"index" : 22,
+				"order" : 122,
 				"text" : "ui_rs_shockwaves",
 				"type" : "bool",
 				"value" : true
@@ -634,16 +667,16 @@
 			"showalbum" : 
 			{
 				"condition" : "showinfo.value == true",
-				"index" : 32,
-				"order" : 132,
+				"index" : 35,
+				"order" : 135,
 				"text" : "ui_rs_showalbum",
 				"type" : "bool",
 				"value" : true
 			},
 			"showcover" : 
 			{
-				"index" : 30,
-				"order" : 130,
+				"index" : 33,
+				"order" : 133,
 				"text" : "ui_rs_showcover",
 				"type" : "bool",
 				"value" : true
@@ -651,34 +684,50 @@
 			"showdate" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 36,
-				"order" : 136,
+				"index" : 39,
+				"order" : 139,
 				"text" : "ui_rs_showdate",
 				"type" : "bool",
 				"value" : true
 			},
 			"showinfo" : 
 			{
-				"index" : 31,
-				"order" : 131,
+				"index" : 34,
+				"order" : 134,
 				"text" : "ui_rs_showinfo",
 				"type" : "bool",
 				"value" : true
 			},
 			"showprogress" : 
 			{
-				"index" : 33,
-				"order" : 133,
+				"index" : 36,
+				"order" : 136,
 				"text" : "ui_rs_showprogress",
 				"type" : "bool",
 				"value" : true
 			},
+			"station" : 
+			{
+				"index" : 44,
+				"order" : 144,
+				"text" : "ui_rs_station",
+				"type" : "bool",
+				"value" : false
+			},
+			"stationhelp" : 
+			{
+				"condition" : "station.value == true",
+				"index" : 45,
+				"order" : 145,
+				"text" : "ui_rs_station_help",
+				"type" : "text"
+			},
 			"uiscale" : 
 			{
-				"index" : 11,
+				"index" : 14,
 				"max" : 160,
 				"min" : 50,
-				"order" : 111,
+				"order" : 114,
 				"text" : "ui_rs_uiscale",
 				"type" : "slider",
 				"value" : 100
@@ -711,18 +760,6 @@
 					{
 						"label" : "ui_rs_vis_ridge",
 						"value" : 4
-					},
-					{
-						"label" : "ui_rs_vis_ridge2",
-						"value" : 7
-					},
-					{
-						"label" : "ui_rs_vis_ridge3",
-						"value" : 8
-					},
-					{
-						"label" : "ui_rs_vis_wall",
-						"value" : 9
 					},
 					{
 						"label" : "ui_rs_vis_fluid",

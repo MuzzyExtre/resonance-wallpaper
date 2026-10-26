@@ -1,8 +1,8 @@
 ﻿# Resonance Control — установка помощника для кнопок управления плеером в обоях Resonance.
-# Компилирует ResonanceControl.cs встроенным в Windows компилятором C#, кладёт exe в
+# Компилирует ResonanceControl.cs и Station.cs встроенным в Windows компилятором C#, кладёт exe в
 # %LOCALAPPDATA%\ResonanceControl, добавляет в автозагрузку и запускает.
 $ErrorActionPreference = 'Stop'
-$src = Join-Path $PSScriptRoot 'ResonanceControl.cs'
+$src = @((Join-Path $PSScriptRoot 'ResonanceControl.cs'), (Join-Path $PSScriptRoot 'Station.cs'))
 $dir = Join-Path $env:LOCALAPPDATA 'ResonanceControl'
 $exe = Join-Path $dir 'ResonanceControl.exe'
 
@@ -15,17 +15,19 @@ New-Item -ItemType Directory -Force $dir | Out-Null
 Get-Process ResonanceControl -ErrorAction SilentlyContinue | Stop-Process -Force
 Start-Sleep -Milliseconds 400
 
+$common = @('/nologo', '/target:winexe', '/optimize+', '/codepage:65001', "/out:$exe", '/r:System.Web.Extensions.dll', '/r:System.Security.dll')
+
 # с перемоткой (системный медиа-API Windows), а если не выйдет — без неё
 $wm = Join-Path $env:WINDIR 'System32\WinMetadata'
 $gac = Join-Path $env:WINDIR 'Microsoft.NET\assembly\GAC_MSIL\System.Runtime'
 $sr = Get-ChildItem $gac -Recurse -Filter System.Runtime.dll -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
 $built = $false
 if ($sr -and (Test-Path (Join-Path $wm 'Windows.Media.winmd'))) {
-  & $csc /nologo /target:winexe /optimize+ /define:SMTC "/out:$exe" "/r:$wm\Windows.Media.winmd" "/r:$wm\Windows.Foundation.winmd" "/r:$sr" $src
+  & $csc @common /define:SMTC "/r:$wm\Windows.Media.winmd" "/r:$wm\Windows.Foundation.winmd" "/r:$sr" $src
   $built = ($LASTEXITCODE -eq 0)
 }
 if (-not $built) {
-  & $csc /nologo /target:winexe /optimize+ "/out:$exe" $src
+  & $csc @common $src
   if ($LASTEXITCODE -ne 0) { Write-Host 'Ошибка компиляции / Build failed'; exit 1 }
   Write-Host 'Собрано без перемотки / Built without seeking'
 }

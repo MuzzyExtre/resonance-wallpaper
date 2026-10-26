@@ -8,16 +8,6 @@
   const $ = id => document.getElementById(id);
 
   const pad2 = n => (n < 10 ? '0' : '') + n;
-  /* общий прямоугольник видимых элементов (у display:none он нулевой) */
-  function unionRect(els) {
-    let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
-    for (const el of els) {
-      const q = el.getBoundingClientRect();
-      if (q.width < 1 || q.height < 1) continue;
-      l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
-    }
-    return r > l ? { l, t, r, b } : null;
-  }
 
   /* разбиваем на графемы (эмодзи и диакритика не разваливаются) */
   function graphemes(text) {
@@ -113,7 +103,7 @@
       const pick = (prefix, val, all) => all.forEach(v => b.classList.toggle(prefix + v, v === val));
       pick('layout-', S.layout, ['center', 'left', 'right']);
       pick('cover-', S.coverStyle, ['card', 'vinyl', 'disc']);
-      pick('vis-', S.visualizer, ['fluid', 'aurora', 'ring', 'bars', 'ridge', 'ridge2', 'ridge3', 'wall', 'none']);
+      pick('vis-', S.visualizer, ['fluid', 'aurora', 'ring', 'bars', 'ridge', 'none']);
       pick('font-', S.font, ['manrope', 'unbounded', 'serif', 'system']);
       pick('clock-', S.clockMode, ['auto', 'idle', 'off']);
       b.classList.toggle('vinyl-color', S.vinylColor === 'color');
@@ -494,11 +484,6 @@
         const m = this.el.meta.getBoundingClientRect();
         this.metaRect = { l: m.left, t: m.top, r: m.right, b: m.bottom };
       } else this.metaRect = null;
-      /* часы (мини в углу или большие в простое) — «Стена» во весь экран гасит под ними линии */
-      const e = this.el;
-      this.clockRect = S.visualizer !== 'wall' ? null
-        : f > 0.5 ? (S.clockMode === 'auto' ? unionRect([e.mcTime, e.mcDate]) : null)
-        : unionRect([e.clockTime, e.clockDate, e.resume]);
       sh.cx = U.lerp(pcx, ccx, f);
       sh.cy = U.lerp(pcy, ccy, f);
       sh.hw = Math.max(4, U.lerp(phw, chw, f));

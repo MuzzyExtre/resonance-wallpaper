@@ -11,7 +11,7 @@
 
   const NB = 64;       // полос на канал
   const TW = 256;      // ширина текстуры спектра
-  const HROWS = 128;   // строк истории (для «Горизонта»; широкому нужно больше 64)
+  const HROWS = 64;    // строк истории (для «Горизонта»)
 
   class AudioEngine {
     constructor() {
@@ -54,7 +54,7 @@
 
       this.hist = new Uint8Array(TW * HROWS);
       this.histRow = new Uint8Array(TW);
-      this.histKick = new Uint8Array(HROWS);   // сила удара, пришедшегося на строку («Горизонт+»)
+      this.histKick = new Uint8Array(HROWS);   // сила удара, пришедшегося на строку
       this.kickAcc = 0;
       this.histHead = 0;
       this.histPushes = 0;

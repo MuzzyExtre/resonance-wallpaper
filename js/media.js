@@ -17,6 +17,7 @@
     thumb: '',
     weColors: null,
     state: 'none',           // none | playing | paused | stopped
+    source: 'pc',            // pc — плееры компьютера через WE, station — Яндекс Станция через помощник
     pos: 0,
     dur: 0,
     stamp: 0,
@@ -69,12 +70,15 @@
      события сначала копятся в raw, а на экран попадают, только когда понятно, что это
      настоящий трек: он играет, или чужой сеанс продержался дольше пары секунд */
   const raw = { title: '', artist: '', album: '', thumb: null, thumbNew: false, timeline: null, state: 'none' };
-  let lastPlaying = -1e9, gateTimer = 0, rawIdle = false;
+  let lastPlaying = -1e9, gateTimer = 0, rawIdle = false, forceNext = false;
 
   function commit() {
     clearTimeout(gateTimer);
     gateTimer = 0;
-    if (raw.title !== M.title || raw.artist !== M.artist || raw.album !== M.album) {
+    if (M.source !== 'pc') return;   // на экране Станция — данные компьютера копятся в raw
+    const force = forceNext;
+    forceNext = false;
+    if (force || raw.title !== M.title || raw.artist !== M.artist || raw.album !== M.album) {
       M.title = raw.title; M.artist = raw.artist; M.album = raw.album;
       M.trackAt = now();
       M.thumbFresh = false;
@@ -82,7 +86,7 @@
     }
     if (raw.thumb !== null && raw.thumbNew) {   // обложка пришла уже для этого трека
       M.thumbFresh = true;
-      if (raw.thumb !== M.thumb) { M.thumb = raw.thumb; M.emit('thumb', raw.thumb); }
+      if (force || raw.thumb !== M.thumb) { M.thumb = raw.thumb; M.emit('thumb', raw.thumb); }
     }
     if (raw.timeline) {
       const tl = raw.timeline;
@@ -91,12 +95,54 @@
       M.hasTimeline = M.dur > 0;
       M.timelineAt = tl.at;
     }
-    if (raw.state !== M.state) {
+    if (force || raw.state !== M.state) {
       if (M.hasTimeline) { M.pos = M.position(); M.stamp = now(); }
       M.state = raw.state;
       M.emit('state', M.state);
     }
   }
+
+  /* ---------- два источника ----------
+     Показываем тот, что заиграл последним; пока оба молчат — прежний */
+  let st = null, stSince = 0, pcSince = 0;
+  function pickSource() {
+    const pcOn = raw.state === 'playing', stOn = !!(st && st.playing);
+    let want = M.source;
+    if (!st) want = 'pc';
+    else if (stOn && !pcOn) want = 'station';
+    else if (pcOn && !stOn) want = 'pc';
+    else if (pcOn && stOn) want = stSince > pcSince ? 'station' : 'pc';
+    if (want === M.source) return false;
+    M.source = want;
+    if (want === 'station') applyStation(true);
+    else { forceNext = true; M.hasTimeline = false; settle(); }
+    return true;
+  }
+  function applyStation(force) {
+    const s = st;
+    if (force || s.title !== M.title || s.artist !== M.artist) {
+      M.title = s.title; M.artist = s.artist; M.album = '';
+      M.trackAt = now();
+      M.thumbFresh = false;
+      M.emit('track', M);
+    }
+    if (s.cover) {
+      M.thumbFresh = true;
+      if (force || s.cover !== M.thumb) { M.thumb = s.cover; M.emit('thumb', s.cover); }
+    }
+    M.pos = s.progress; M.dur = s.duration; M.stamp = s.at;
+    M.hasTimeline = s.duration > 0;
+    M.timelineAt = s.at;
+    const state = s.playing ? 'playing' : 'paused';
+    if (force || state !== M.state) { M.state = state; M.emit('state', state); }
+  }
+  /* вход для station.js: состояние колонки или null (выключено, нет связи, ничего не играет) */
+  M._station = function (s) {
+    const was = !!(st && st.playing);
+    st = s && s.title ? s : null;
+    if (st && st.playing && !was) stSince = now();
+    if (!pickSource() && st && M.source === 'station') applyStation(false);
+  };
 
   function settle() {
     clearTimeout(gateTimer);
@@ -142,9 +188,10 @@
   function onPlayback(e) {
     if (!e) return;
     M.seen = true;
+    const was = raw.state;
     raw.state = stateName(e.state);
-    if (raw.state === 'playing') lastPlaying = now();
-    settle();
+    if (raw.state === 'playing') { lastPlaying = now(); if (was !== 'playing') pcSince = now(); }
+    if (!pickSource()) settle();
   }
 
   function onTimeline(e) {

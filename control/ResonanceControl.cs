@@ -2,7 +2,7 @@
 // Слушает только 127.0.0.1:57391 и выполняет команды лишь от процессов
 // Wallpaper Engine / Lively: нажимает системные медиаклавиши (Windows передаёт
 // их текущему плееру — Яндекс Музыке, Spotify, браузеру) и, если доступен
-// системный медиа-API, перематывает трек.
+// системный медиа-API, перематывает трек. Яндекс Станция — в Station.cs.
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -200,6 +200,22 @@ static class ResonanceControl
         if (b.Length > 0) s.Write(b, 0, b.Length);
     }
 
+    // картинка или звук для обоев (обложка Станции, трек для визуализации)
+    static void SendBytes(NetworkStream s, string type, byte[] body)
+    {
+        string head =
+            "HTTP/1.1 200 OK\r\n" +
+            "Content-Type: " + (string.IsNullOrEmpty(type) ? "application/octet-stream" : type) + "\r\n" +
+            "Access-Control-Allow-Origin: *\r\n" +
+            "Access-Control-Allow-Private-Network: true\r\n" +
+            "Cache-Control: no-store\r\n" +
+            "Content-Length: " + body.Length + "\r\n" +
+            "Connection: close\r\n\r\n";
+        byte[] h = Encoding.ASCII.GetBytes(head);
+        s.Write(h, 0, h.Length);
+        s.Write(body, 0, body.Length);
+    }
+
     static string QueryText(string query, string key)
     {
         foreach (string part in query.Split('&'))
@@ -235,13 +251,38 @@ static class ResonanceControl
             if (q >= 0) { path = target.Substring(0, q); query = target.Substring(q + 1); }
             string client = ClientName(c);
             bool allowed = Allowed(client);
-            Note(allowed, client, path);
+            if (!allowed || path != "/station") Note(allowed, client, path);   // опрос Станции идёт часто — не пишем на диск
             if (!allowed) { Send(s, 403, "{\"ok\":false}"); return; }
             const string ok = "{\"ok\":true}", fail = "{\"ok\":false}";
             string title = QueryText(query, "title"), artist = QueryText(query, "artist");
             switch (path)
             {
-                case "/ping": Send(s, 200, "{\"ok\":true,\"v\":3,\"seek\":" + (CanSeek() ? "true" : "false") + "}"); return;
+                case "/ping": Send(s, 200, "{\"ok\":true,\"v\":4,\"station\":true,\"seek\":" + (CanSeek() ? "true" : "false") + "}"); return;
+                case "/station": Send(s, 200, Station.StatusJson()); return;
+                case "/station/login":
+                    {
+                        string err = null;
+                        try { Station.StartLogin(); } catch (Exception e) { err = e.Message; }
+                        Send(s, 200, err == null ? ok : "{\"ok\":false,\"error\":" + Station.Quote(err) + "}");
+                        return;
+                    }
+                case "/station/open": Send(s, 200, Station.OpenLogin() ? ok : fail); return;
+                case "/station/logout": Station.Logout(); Send(s, 200, ok); return;
+                case "/station/cmd": Send(s, 200, Station.Command(QueryText(query, "c"), QueryNumber(query, "v")) ? ok : fail); return;
+                case "/station/cover":
+                case "/station/audio":
+                    {
+                        string type = null;
+                        byte[] data = null;
+                        try
+                        {
+                            data = path == "/station/cover" ? Station.Cover(QueryText(query, "u"), out type)
+                                                            : Station.Audio(QueryText(query, "id"), out type);
+                        }
+                        catch { }
+                        if (data == null) Send(s, 404, fail); else SendBytes(s, type, data);
+                        return;
+                    }
                 case "/playpause":
                 case "/next":
                 case "/prev":
@@ -289,6 +330,7 @@ static class ResonanceControl
         using (Mutex single = new Mutex(true, "Local\\ResonanceControl" + Port, out created))
         {
             if (!created) return;   // уже запущен
+            Station.Init();
             TcpListener listener = new TcpListener(IPAddress.Loopback, Port);
             try { listener.Start(); } catch { return; }
             while (true)
