@@ -14,6 +14,7 @@
   let thumbImg = null, hqTimer = 0, hqToken = 0, hqFor = null, holdImg = null, holdTimer = 0;
   let lastPlayed = null;   // последний трек, который действительно играл — для кнопки «Продолжить»
   let fromStation = false; // визуализатор питает «тень» трека Станции — звук компьютера не подмешиваем
+  let pausedAt = 0;        // когда трек встал на паузу — для часов при долгой паузе
 
   const audio = new RSN.AudioEngine();
   const ui = new RSN.UI();
@@ -168,7 +169,8 @@
     if (M.enabled === false && M.source !== 'station') return 'idle';
     if (!(M.title || M.thumb)) return 'idle';
     if (M.state === 'stopped') return 'idle';
-    if (M.state === 'paused') return 'paused';
+    /* долгая пауза (если так выбрано в настройках) — тоже экран с часами и кнопкой «Продолжить» */
+    if (M.state === 'paused') return S.pauseClock > 0 && pausedAt && performance.now() - pausedAt > S.pauseClock * 60000 ? 'idle' : 'paused';
     return 'playing';
   }
   /* фон без музыки: от последнего трека (если он был и так выбрано) или цвет схемы */
@@ -218,7 +220,11 @@
   });
   /* запоминаем трек, только пока он играет: на остановке WE может подсунуть чужой сеанс */
   const notePlaying = () => { if (M.state === 'playing' && (M.title || M.artist)) lastPlayed = { title: M.title, artist: M.artist, source: M.source }; };
-  M.on('state', () => { notePlaying(); updateMode(performance.now()); });
+  M.on('state', () => {
+    pausedAt = M.state === 'paused' ? performance.now() : 0;
+    notePlaying();
+    updateMode(performance.now());
+  });
   const refreshHint = () => ui.setHint(M.enabled === false ? RSN.i18n.t('mediaHint') : '');
   M.on('status', refreshHint);
 

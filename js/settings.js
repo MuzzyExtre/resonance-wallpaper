@@ -33,6 +33,7 @@
     showAlbum: true,
     showProgress: true,
     clockMode: 'auto',
+    pauseClock: 0,        // минут паузы до экрана с часами; 0 — не показывать
     clock24: true,
     showDate: true,
     quality: 'high',
@@ -67,6 +68,7 @@
     font:       { key: 'font',       vals: { 1: 'manrope', 2: 'unbounded', 3: 'serif', 4: 'system' }, lively: [1, 2, 3, 4] },
     accentmode: { key: 'accentMode', vals: { 1: 'auto', 2: 'custom' }, lively: [1, 2] },
     clockmode:  { key: 'clockMode',  vals: { 1: 'auto', 2: 'idle', 0: 'off' }, lively: [1, 2, 0] },
+    pauseclock: { key: 'pauseClock', vals: { 0: 0, 1: 1, 5: 5, 15: 15 }, lively: [0, 1, 5, 15] },
     quality:    { key: 'quality',    vals: { 1: 'high', 2: 'medium', 3: 'low' }, lively: [1, 2, 3] }
   };
   const SLIDERS = {

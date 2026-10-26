@@ -33,6 +33,7 @@
   "showalbum": {"type": "checkbox", "value": true, "text": "Альбом"},
   "showprogress": {"type": "checkbox", "value": true, "text": "Прогресс трека"},
   "clockmode": {"type": "dropdown", "value": 0, "text": "Часы", "items": ["Всегда", "Без музыки", "Нет"]},
+  "pauseclock": {"type": "dropdown", "value": 0, "text": "Часы на паузе", "items": ["Не показывать", "Через 1 минуту", "Через 5 минут", "Через 15 минут"]},
   "clock24": {"type": "checkbox", "value": true, "text": "24 часа"},
   "showdate": {"type": "checkbox", "value": true, "text": "Дата"},
   "hqcovers": {"type": "checkbox", "value": true, "text": "Чёткие обложки (название трека ищется в Deezer и iTunes)"},

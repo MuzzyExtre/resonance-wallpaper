@@ -61,6 +61,11 @@
 				"ui_rs_offsety" : "Vertical offset, %",
 				"ui_rs_parallax" : "Cursor parallax",
 				"ui_rs_particles" : "Particles, %",
+				"ui_rs_pauseclock" : "Clock while paused",
+				"ui_rs_pauseclock_0" : "Never",
+				"ui_rs_pauseclock_1" : "After 1 minute",
+				"ui_rs_pauseclock_15" : "After 15 minutes",
+				"ui_rs_pauseclock_5" : "After 5 minutes",
 				"ui_rs_q_high" : "High",
 				"ui_rs_q_low" : "Low",
 				"ui_rs_q_medium" : "Medium",
@@ -149,6 +154,11 @@
 				"ui_rs_offsety" : "Сдвиг по вертикали, %",
 				"ui_rs_parallax" : "Параллакс от курсора",
 				"ui_rs_particles" : "Частицы, %",
+				"ui_rs_pauseclock" : "Часы на паузе",
+				"ui_rs_pauseclock_0" : "Не показывать",
+				"ui_rs_pauseclock_1" : "Через 1 минуту",
+				"ui_rs_pauseclock_15" : "Через 15 минут",
+				"ui_rs_pauseclock_5" : "Через 5 минут",
 				"ui_rs_q_high" : "Высокое",
 				"ui_rs_q_low" : "Низкое",
 				"ui_rs_q_medium" : "Среднее",
@@ -256,8 +266,8 @@
 			"clock24" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 38,
-				"order" : 138,
+				"index" : 39,
+				"order" : 139,
 				"text" : "ui_rs_clock24",
 				"type" : "bool",
 				"value" : true
@@ -287,7 +297,7 @@
 			},
 			"controls" : 
 			{
-				"index" : 42,
+				"index" : 43,
 				"options" : 
 				[
 					{
@@ -303,15 +313,15 @@
 						"value" : 0
 					}
 				],
-				"order" : 142,
+				"order" : 143,
 				"text" : "ui_rs_controls",
 				"type" : "combo",
 				"value" : 1
 			},
 			"controlshelp" : 
 			{
-				"index" : 43,
-				"order" : 143,
+				"index" : 44,
+				"order" : 144,
 				"text" : "ui_rs_controls_help",
 				"type" : "text"
 			},
@@ -340,8 +350,8 @@
 			},
 			"debug" : 
 			{
-				"index" : 48,
-				"order" : 148,
+				"index" : 49,
+				"order" : 149,
 				"text" : "ui_rs_debug",
 				"type" : "bool",
 				"value" : false
@@ -412,8 +422,8 @@
 			},
 			"hdrcontrol" : 
 			{
-				"index" : 41,
-				"order" : 141,
+				"index" : 42,
+				"order" : 142,
 				"text" : "ui_rs_hdr_control",
 				"type" : "text"
 			},
@@ -433,8 +443,8 @@
 			},
 			"hdrperf" : 
 			{
-				"index" : 46,
-				"order" : 146,
+				"index" : 47,
+				"order" : 147,
 				"text" : "ui_rs_hdr_perf",
 				"type" : "text"
 			},
@@ -447,8 +457,8 @@
 			},
 			"hqcovers" : 
 			{
-				"index" : 40,
-				"order" : 140,
+				"index" : 41,
+				"order" : 141,
 				"text" : "ui_rs_hqcovers",
 				"type" : "bool",
 				"value" : true
@@ -556,9 +566,37 @@
 				"type" : "slider",
 				"value" : 50
 			},
+			"pauseclock" : 
+			{
+				"condition" : "clockmode.value == 1 || clockmode.value == 2",
+				"index" : 38,
+				"options" : 
+				[
+					{
+						"label" : "ui_rs_pauseclock_0",
+						"value" : 0
+					},
+					{
+						"label" : "ui_rs_pauseclock_1",
+						"value" : 1
+					},
+					{
+						"label" : "ui_rs_pauseclock_5",
+						"value" : 5
+					},
+					{
+						"label" : "ui_rs_pauseclock_15",
+						"value" : 15
+					}
+				],
+				"order" : 138,
+				"text" : "ui_rs_pauseclock",
+				"type" : "combo",
+				"value" : 0
+			},
 			"quality" : 
 			{
-				"index" : 47,
+				"index" : 48,
 				"options" : 
 				[
 					{
@@ -574,7 +612,7 @@
 						"value" : 3
 					}
 				],
-				"order" : 147,
+				"order" : 148,
 				"text" : "ui_rs_quality",
 				"type" : "combo",
 				"value" : 1
@@ -684,8 +722,8 @@
 			"showdate" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 39,
-				"order" : 139,
+				"index" : 40,
+				"order" : 140,
 				"text" : "ui_rs_showdate",
 				"type" : "bool",
 				"value" : true
@@ -708,8 +746,8 @@
 			},
 			"station" : 
 			{
-				"index" : 44,
-				"order" : 144,
+				"index" : 45,
+				"order" : 145,
 				"text" : "ui_rs_station",
 				"type" : "bool",
 				"value" : false
@@ -717,8 +755,8 @@
 			"stationhelp" : 
 			{
 				"condition" : "station.value == true",
-				"index" : 45,
-				"order" : 145,
+				"index" : 46,
+				"order" : 146,
 				"text" : "ui_rs_station_help",
 				"type" : "text"
 			},
