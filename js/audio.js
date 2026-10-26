@@ -72,6 +72,7 @@
       this.lastIngest = -10;
       this.frames = 0;
       this.sensitivity = 1;
+      this.volume = 1;     // громкость источника поверх автоуровня (Станция: громкость колонки)
       this.onBeat = null;
     }
 
@@ -100,9 +101,10 @@
         if (r > frameMax) frameMax = r;
       }
 
-      /* автоусиление: тихие и громкие треки выглядят одинаково живо */
+      /* автоусиление: тихие и громкие треки выглядят одинаково живо; громкость источника — уже после него,
+         иначе автоуровень сразу бы её «съел» */
       this.agc = Math.max(frameMax, this.agc * Math.exp(-dtI / 6), 0.1);
-      const gain = (0.95 / this.agc) * this.sensitivity;
+      const gain = (0.95 / this.agc) * this.sensitivity * this.volume;
       this.gain = gain;
 
       let bass = 0, mid = 0, high = 0, all = 0, flux = 0;

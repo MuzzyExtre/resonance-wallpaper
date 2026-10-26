@@ -351,6 +351,8 @@
     last = now;
     try {
       fromStation = !!(RSN.station && RSN.station.feed(audio));
+      /* у Станции визуализатор следует за громкостью колонки (плавно, за полсекунды) */
+      audio.volume = U.damp(audio.volume, fromStation ? RSN.station.level() : 1, 4, dt);
       audio.update(dt);
       updateMode(now);
       stepPalette(dt);

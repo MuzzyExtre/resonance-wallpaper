@@ -13,6 +13,14 @@
   const St = (RSN.station = {
     info: null,       // последний ответ помощника
     offset: 0,        // сдвиг «тени» относительно позиции колонки, с
+    volume: -1,       // громкость колонки 0..1 (-1 — неизвестна)
+    /* множитель визуализатора от громкости колонки: на 5 из 10 — как со звуком компьютера,
+       громче — активнее (до ×1,6), тише — спокойнее, без звука — волн нет */
+    level() {
+      const v = this.volume;
+      if (v < 0) return 1;
+      return v <= 0.001 ? 0 : Math.min(1.6, Math.pow(v / 0.5, 0.7));
+    },
     cmd(c, v) {
       return fetch(BASE + '/cmd?c=' + c + (v !== undefined ? '&v=' + (+v).toFixed(2) : ''), { cache: 'no-store' })
         .then(r => r.json()).then(j => { schedule(150); return !!j.ok; })
@@ -77,6 +85,7 @@
       return;
     }
     if (!linked) { linked = true; panel(sawLogin ? 'linked' : 'hide', j); }
+    if (typeof j.volume === 'number') St.volume = j.volume;
     if (!j.title) { M._station(null); return; }
     clockSync(+j.progress || 0, !!j.playing, j.id || j.title);
     M._station({
