@@ -267,7 +267,7 @@
 
   /* ---------- подсказка и клавиши ---------- */
   function cycle(key, vals) {
-    const map = { visualizer: ['ridge', 'ridge2', 'fluid', 'aurora', 'ring', 'bars', 'none'], coverstyle: ['card', 'vinyl', 'disc'], layout: ['center', 'left', 'right'], font: ['manrope', 'unbounded', 'serif', 'system'], quality: ['high', 'medium', 'low'] };
+    const map = { visualizer: ['ridge', 'ridge2', 'ridge3', 'wall', 'fluid', 'aurora', 'ring', 'bars', 'none'], coverstyle: ['card', 'vinyl', 'disc'], layout: ['center', 'left', 'right'], font: ['manrope', 'unbounded', 'serif', 'system'], quality: ['high', 'medium', 'low'] };
     const field = { visualizer: 'visualizer', coverstyle: 'coverStyle', layout: 'layout', font: 'font', quality: 'quality' }[key];
     const i = map[key].indexOf(RSN.settings[field]);
     const props = {};
@@ -302,7 +302,7 @@
       else if (k === 'KeyB' || k === 'ArrowLeft') prev();
       else if (k === 'Space' || k === 'KeyP') { e.preventDefault(); togglePause(); }
       else if (k === 'KeyS') stop();
-      else if (k === 'KeyV') cycle('visualizer', [4, 7, 6, 1, 2, 3, 0]);
+      else if (k === 'KeyV') cycle('visualizer', [4, 7, 8, 9, 6, 1, 2, 3, 0]);
       else if (k === 'KeyG') RSN.applyProps({ language: { value: RSN.i18n.lang === 'ru' ? 2 : 1 } }, 'we');
       else if (k === 'KeyC') cycle('coverstyle', [1, 2, 3]);
       else if (k === 'KeyL') cycle('layout', [1, 2, 3]);

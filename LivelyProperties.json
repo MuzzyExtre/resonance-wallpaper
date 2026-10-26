@@ -1,10 +1,11 @@
 {
-  "schemecolor": {"type": "color", "value": "#705CFA", "text": "Цвет фона без музыки"},
+  "idlebg": {"type": "dropdown", "value": 0, "text": "Фон без музыки", "items": ["Последний трек", "Свой цвет"]},
+  "schemecolor": {"type": "color", "value": "#705CFA", "text": "Цвет фона"},
   "language": {"type": "dropdown", "value": 0, "text": "Язык / Language", "items": ["Как в системе", "Русский", "English"]},
   "layout": {"type": "dropdown", "value": 0, "text": "Плеер", "items": ["В центре", "Слева", "Справа"]},
   "coverstyle": {"type": "dropdown", "value": 1, "text": "Обложка", "items": ["Карточка", "Винил", "Диск"]},
   "vinylcolor": {"type": "dropdown", "value": 0, "text": "Пластинка", "items": ["Чёрная", "Цветная"]},
-  "visualizer": {"type": "dropdown", "value": 0, "text": "Визуализатор", "items": ["Горизонт", "Горизонт+", "Жидкий свет", "Аврора", "Кольцо", "Столбики", "Нет"]},
+  "visualizer": {"type": "dropdown", "value": 0, "text": "Визуализатор", "items": ["Горизонт", "Горизонт+", "Горизонт+ широкий", "Стена", "Жидкий свет", "Аврора", "Кольцо", "Столбики", "Нет"]},
   "fluidmouse": {"type": "checkbox", "value": true, "text": "Курсор размешивает дым"},
   "fluidtrail": {"type": "slider", "value": 50, "min": 0, "max": 100, "step": 1, "text": "Длина шлейфов, %"},
   "ridgestyle": {"type": "dropdown", "value": 0, "text": "Рельеф", "items": ["Линии", "Сетка"]},

@@ -117,8 +117,9 @@ static class ResonanceControl
     static string Norm(string s) { return (s ?? "").Trim().ToLowerInvariant(); }
 
     // плеер, чей трек показан на обоях. «Текущая» сессия Windows — это просто тот,
-    // где звук запускали последним (например, YouTube), а нам нужен тот, что на экране
-    static GlobalSystemMediaTransportControlsSession Target(string title, string artist)
+    // где звук запускали последним (например, YouTube), а нам нужен тот, что на экране.
+    // strict — только совпадение по треку, без запасного варианта
+    static GlobalSystemMediaTransportControlsSession Target(string title, string artist, bool strict)
     {
         GlobalSystemMediaTransportControlsSessionManager m = Manager();
         string t = Norm(title), a = Norm(artist);
@@ -139,19 +140,20 @@ static class ResonanceControl
                 if (score > bestScore) { bestScore = score; best = s; }
             }
         }
-        return best ?? m.GetCurrentSession();
+        return best ?? (strict ? null : m.GetCurrentSession());
     }
 
-    // 1 — выполнено, 0 — плеер найден, но отказал, -1 — системный API недоступен
-    static int Command(string cmd, string title, string artist, double seconds)
+    // 1 — выполнено, 0 — плеер найден, но отказал, -1 — системный API недоступен или плеер не найден
+    static int Command(string cmd, string title, string artist, double seconds, bool strict = false)
     {
         GlobalSystemMediaTransportControlsSession s;
-        try { s = Target(title, artist); } catch { return -1; }
+        try { s = Target(title, artist, strict); } catch { return -1; }
         if (s == null) return -1;
         try
         {
             bool ok = false;
             if (cmd == "playpause") ok = Wait(s.TryTogglePlayPauseAsync());
+            else if (cmd == "play") ok = Wait(s.TryPlayAsync());
             else if (cmd == "next") ok = Wait(s.TrySkipNextAsync());
             else if (cmd == "prev") ok = Wait(s.TrySkipPreviousAsync());
             else if (cmd == "seek") ok = Wait(s.TryChangePlaybackPositionAsync((long)(seconds * 10000000.0)));
@@ -161,7 +163,7 @@ static class ResonanceControl
     }
 #else
     static bool CanSeek() { return false; }
-    static int Command(string cmd, string title, string artist, double seconds) { return -1; }
+    static int Command(string cmd, string title, string artist, double seconds, bool strict = false) { return -1; }
 #endif
 
     static string ReadHead(NetworkStream s)
@@ -239,7 +241,7 @@ static class ResonanceControl
             string title = QueryText(query, "title"), artist = QueryText(query, "artist");
             switch (path)
             {
-                case "/ping": Send(s, 200, "{\"ok\":true,\"v\":2,\"seek\":" + (CanSeek() ? "true" : "false") + "}"); return;
+                case "/ping": Send(s, 200, "{\"ok\":true,\"v\":3,\"seek\":" + (CanSeek() ? "true" : "false") + "}"); return;
                 case "/playpause":
                 case "/next":
                 case "/prev":
@@ -248,6 +250,11 @@ static class ResonanceControl
                         // медиаклавиша — только если системный API недоступен совсем
                         if (r < 0) Key(path == "/playpause" ? (byte)0xB3 : path == "/next" ? (byte)0xB0 : (byte)0xB1);
                         Send(s, 200, r != 0 ? ok : fail);
+                        return;
+                    }
+                case "/resume":   // продолжить остановленный трек: только тот плеер, чей трек был на обоях
+                    {
+                        Send(s, 200, Command("play", title, artist, 0, true) == 1 ? ok : fail);
                         return;
                     }
                 case "/seek":
@@ -262,7 +269,7 @@ static class ResonanceControl
 #if SMTC
                         try
                         {
-                            GlobalSystemMediaTransportControlsSession t = Target(title, artist);
+                            GlobalSystemMediaTransportControlsSession t = Target(title, artist, false);
                             if (t != null) app = t.SourceAppUserModelId ?? "";
                         }
                         catch { }

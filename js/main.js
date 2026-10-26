@@ -12,6 +12,7 @@
   let mode = 'idle', idleSince = 0;
   let thumbToken = 0, genTimer = 0, lastWave = 0;
   let thumbImg = null, hqTimer = 0, hqToken = 0, hqFor = null, holdImg = null, holdTimer = 0;
+  let lastPlayed = null;   // последний трек, который действительно играл — для кнопки «Продолжить»
 
   const audio = new RSN.AudioEngine();
   const ui = new RSN.UI();
@@ -169,13 +170,23 @@
     if (M.state === 'paused') return 'paused';
     return 'playing';
   }
+  /* фон без музыки: от последнего трека (если он был и так выбрано) или цвет схемы */
+  function idleBackground() {
+    if (S.idleBg === 'last' && trackTex) {
+      if (gfx) gfx.setCover(trackTex);
+      if (trackPal) setTargetPalette(trackPal);
+    } else {
+      if (gfx) gfx.setCover(idleTex);
+      setTargetPalette(idlePal);
+    }
+  }
   function setMode(m) {
     const prev = mode;
     mode = m;
     ui.setMode(m);
     if (m === 'idle') {
-      if (gfx) gfx.setCover(idleTex);
-      setTargetPalette(idlePal);
+      ui.setResume(lastPlayed);
+      if (!(S.idleBg === 'last' && trackTex)) idleBackground();   // фон последнего трека просто остаётся
     } else if (prev === 'idle') {
       if (gfx && trackTex) gfx.setCover(trackTex);
       if (trackPal) setTargetPalette(trackPal);
@@ -196,6 +207,7 @@
   M.on('thumb', onThumb);
   M.on('track', () => {
     trace('track: ' + M.artist + ' — ' + M.title);
+    notePlaying();
     ui.setTrack(M.title, M.artist, M.album);
     if (S.hqCovers && RSN.hq) RSN.hq.prefetch(M.title, M.artist);
     /* у трека так и не появилось своей обложки — рисуем абстрактную */
@@ -203,7 +215,9 @@
     genTimer = setTimeout(() => { if (!M.thumbFresh) onThumb(''); }, 1200);
     scheduleHQ();
   });
-  M.on('state', () => updateMode(performance.now()));
+  /* запоминаем трек, только пока он играет: на остановке WE может подсунуть чужой сеанс */
+  const notePlaying = () => { if (M.state === 'playing' && (M.title || M.artist)) lastPlayed = { title: M.title, artist: M.artist }; };
+  M.on('state', () => { notePlaying(); updateMode(performance.now()); });
   const refreshHint = () => ui.setHint(M.enabled === false ? RSN.i18n.t('mediaHint') : '');
   M.on('status', refreshHint);
 
@@ -216,10 +230,15 @@
   ui.onControl = (cmd, arg) => {
     if (RSN.demo && RSN.demoControl) {
       const d = RSN.demoControl;
-      if (cmd === 'playpause') d.togglePause();
+      if (cmd === 'playpause' || cmd === 'resume') d.togglePause();
       else if (cmd === 'next') d.next();
       else if (cmd === 'prev') d.prev();
       else if (cmd === 'seek' && d.seek) d.seek(arg);
+      return;
+    }
+    if (cmd === 'resume') {
+      /* плеер закрыт или трек в нём уже другой — кнопка «качает головой» */
+      if (lastPlayed) RSN.control.resume(lastPlayed).then(ok => { if (!ok) ui.resumeFailed(); });
       return;
     }
     if (cmd === 'seek') {
@@ -248,15 +267,16 @@
     if (has('schemeColor')) {
       idlePal = P.paletteFromColor(S.schemeColor, 0.1);
       idleTex = P.idleTexture(S.schemeColor);
-      if (mode === 'idle') { if (gfx) gfx.setCover(idleTex); setTargetPalette(idlePal); }
     }
-    if (has('accentMode') || has('accentColor')) setTargetPalette(mode === 'idle' || !trackPal ? idlePal : trackPal);
+    if ((has('schemeColor') || has('idleBg')) && mode === 'idle') idleBackground();
+    if (has('accentMode') || has('accentColor')) setTargetPalette(trackPal && (mode !== 'idle' || S.idleBg === 'last') ? trackPal : idlePal);
     if (has('hqCovers') && S.hqCovers) scheduleHQ();
     if (has('debug') && RSN.setDebug) RSN.setDebug(S.debug || !!window.RSN_DEBUG);
     if (has('language') && RSN.i18n.setMode(S.language)) {
       ui.lastMinute = -1;
       refreshHint();
       if (!M.title && !M.artist) ui.renderText();
+      ui.setResume(mode === 'idle' ? lastPlayed : null);
       if (RSN.onLanguage) RSN.onLanguage();
     }
     if (has('controls')) refreshControls();
@@ -335,6 +355,7 @@
         activity = U.damp(activity, audio.active && lv.energy + lv.bass > 0.03 ? 1 : 0, 1.5, dt);
         st.visAlpha = mode === 'idle' ? activity : Math.max(activity, 0.65);
         st.meta = ui.metaRect;
+        st.clock = ui.clockRect;
         gfx.render(dt, st);
       }
     } catch (e) {

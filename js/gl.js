@@ -9,8 +9,10 @@
   'use strict';
   const RSN = window.RSN, U = RSN.util;
 
-  const TW = 256, HROWS = 64, BG_N = 128;
-  const STYLE_ID = { none: 0, aurora: 1, ring: 2, bars: 3, ridge: 4, fluid: 5, ridge2: 7 };
+  const TW = 256, HROWS = 128, BG_N = 128;
+  const STYLE_ID = { none: 0, aurora: 1, ring: 2, bars: 3, ridge: 4, fluid: 5, ridge2: 7, ridge3: 8, wall: 9 };
+  const RIDGES = { ridge: 1, ridge2: 1, ridge3: 1, wall: 1 };   // режимы на истории спектра
+  const PLUS = { ridge2: 1, ridge3: 1, wall: 1 };                // …с битами, туманом и искрами
   /* sim/dye/glow — сетка жидкости (строк), краска и свечение (доля высоты кадра) */
   const QUALITY = {
     high:   { main: 1.0,  bg: 0.5,  parts: 1.0,  sim: 144, dye: 0.6,  iters: 22, glow: 0.3 },
@@ -290,16 +292,25 @@ vec3 visual(vec3 col, vec2 px) {
 }
 #endif
 
-#if STYLE == 4 || STYLE == 7
+#if STYLE == 4 || STYLE >= 7
 /* «Горизонт»: история спектра в перспективе (в духе Unknown Pleasures)
    + раскалённые пики, ретро-солнце за рельефом, вариант с каркасной сеткой.
    STYLE 7 — «Горизонт+»: тот же рельеф и то же движение, плюс: удары записываются
    в строки истории и уходят вдаль световыми полосами, в низинах стелется туман,
-   склоны — твёрдый подсвеченный камень, над гребнями ореол; искры с пиков — частицами */
+   склоны — твёрдый подсвеченный камень, над гребнями ореол; искры с пиков — частицами.
+   STYLE 8 — «Горизонт+ широкий»: хребты по всей ширине (спектр повторяется зеркально,
+   боковые копии чуть старше — без швов), строк больше — рельеф уходит дальше.
+   STYLE 9 — «Стена»: те же строки стоят стеной перед зрителем: свежая внизу,
+   история поднимается вверх, стена отклонена назад — верхние строки дальше, теснее и мельче.
+   В обоих новых режимах сдвиг камеры даёт параллакс: ближние строки смещаются сильнее дальних */
 uniform vec4 uRidge;   // x: 1 — сетка, y: солнце, z: сдвиг камеры (px), w: бас
 uniform vec4 uMeta;    // прямоугольник текста плеера (px): солнце под ним приглушаем
 uniform vec2 uSun;     // сдвиг солнца от точки схода (px) и радиус (доля высоты)
-#if STYLE == 7
+#if STYLE == 9
+uniform vec4 uMeta2;   // часы (px): стена под ними и под текстом гаснет
+#define WALL_Z 2.3     // во сколько раз верхняя строка дальше нижней
+#endif
+#if STYLE >= 7
 uniform vec4 uPlus;    // x: удар сейчас, y: сила реакции на бит
 uniform sampler2D uKickH;   // удар, пришедшийся на строку истории (ROWS × 1)
 float kickRow(float fi) {
@@ -308,7 +319,13 @@ float kickRow(float fi) {
   return mix(texture2D(uKickH, vec2((rB + 0.5) / ROWS, 0.5)).r, texture2D(uKickH, vec2((rA + 0.5) / ROWS, 0.5)).r, uHistPhase) * uPlus.y;
 }
 #endif
+#if STYLE == 8
+#define RIDGE_N 88
+#elif STYLE == 9
+#define RIDGE_N 64
+#else
 #define RIDGE_N 56
+#endif
 float rectMask(vec2 px, vec4 r, float soft) {
   vec2 c = (r.xy + r.zw) * 0.5, h = max((r.zw - r.xy) * 0.5, 0.0);
   vec2 d = abs(px - c) - h;
@@ -320,6 +337,18 @@ vec3 heat(float a, float k) {
 }
 /* высота строки i в точке u: строки стоят на месте, форма перетекает между строками истории */
 float rowA(float u, float fi) {
+#if STYLE >= 8
+  /* по всей ширине: копии спектра зеркальные (на стыках совпадают), чем дальше от центра —
+     тем старше строка (плавно, без швов), чтобы повтор не бросался в глаза */
+  float n = floor(u);
+  float t = u - n;
+  float uu = mod(n, 2.0) < 0.5 ? t : 1.0 - t;
+  float x = min(fi + abs(u - 0.5) * 2.5, ROWS - 3.0) + 1.0 - uHistPhase;
+  float x0 = floor(x), fr = x - x0;
+  float r0 = mod(uHistHead - x0 + ROWS, ROWS), r1 = mod(uHistHead - x0 - 1.0 + ROWS, ROWS);
+  float aw = mix(texture2D(uHist, vec2(uu, (r0 + 0.5) / ROWS)).r, texture2D(uHist, vec2(uu, (r1 + 0.5) / ROWS)).r, fr);
+  return aw * (1.0 - 0.05 * min(abs(u - 0.5), 4.0));
+#endif
   float a = 0.0;
   if (u > 0.0 && u < 1.0) {
     float rA = mod(uHistHead - fi + ROWS, ROWS);
@@ -331,9 +360,21 @@ float rowA(float u, float fi) {
 vec3 visual(vec3 col, vec2 px) {
   float horizon = uGeo.x, front = uGeo.y, Hf = uGeo.z, Wf = uGeo.w;
   float cx = uRes.x * 0.5 + uRidge.z;
+#if STYLE == 8
+  float sunX = uRes.x * 0.5;                   // солнце бесконечно далеко — от камеры не сдвигается
+#else
+  float sunX = cx;
+#endif
+#if STYLE == 9
+  float clear = 1.0 - 0.9 * max(rectMask(px, uMeta, 150.0 * uS), rectMask(px, uMeta2, 100.0 * uS));
+  float vanish = front + (horizon - front) / (1.0 - 1.0 / WALL_Z);   // линия схода — выше экрана
+#else
+  float clear = 1.0;
+#endif
+#if STYLE != 9
   if (uRidge.y > 0.001) {
     float R = uRes.y * uSun.y * (1.0 + 0.05 * uRidge.w);
-    vec2 sd = px - vec2(cx + uSun.x, horizon + R * 0.22);
+    vec2 sd = px - vec2(sunX + uSun.x, horizon + R * 0.22);
     float rr = length(sd);
     float yy = sd.y / R;
     float disc = 1.0 - smoothstep(R - 1.5 * uS, R + 1.5 * uS, rr);
@@ -344,8 +385,11 @@ vec3 visual(vec3 col, vec2 px) {
     col = mix(col, sunC * 1.15, disc * (1.0 - gap) * uRidge.y * shield);
     col += mix(uC1, sunC, 0.5) * exp(-max(rr - R, 0.0) / (R * 0.55)) * 0.22 * uRidge.y * (0.8 + 0.4 * uRidge.w) * shield;
   }
-#if STYLE == 7
+#endif
+#if STYLE >= 7
+#if STYLE != 9
   if (px.y > horizon + 40.0 * uS) return col;
+#endif
   vec3 glow = vec3(0.0);                       // ореол строк впереди: их линии ниже пикселя и его не закрывают
   vec3 hazeC = mix(uC2, uC3, 0.5) * 0.85 + 0.08;
 #else
@@ -354,16 +398,35 @@ vec3 visual(vec3 col, vec2 px) {
   float prevY = -1.0, prevZ = 0.8;
   for (int i = 0; i < RIDGE_N; i++) {
     float fi = float(i);
+#if STYLE == 9
+    /* стена: строки от низа экрана до верха в перспективе, выше — дальше (теснее, мельче, темнее) */
+    float tw = fi / float(RIDGE_N - 1);
+    float z = 1.0 + tw * (WALL_Z - 1.0);
+    float iz = 1.0 / z;
+    float yb = vanish - (vanish - front) * iz;
+    float fog = exp(-1.5 * tw) * (1.0 - 0.5 * smoothstep(0.7, 1.0, tw));
+#else
     float z = 1.0 + fi * 0.15;
     float iz = 1.0 / z;
     float yb = horizon - (horizon - front) * iz;
+#if STYLE == 8
+    float fog = exp(-fi * 0.042) * smoothstep(0.0, 0.5, 1.0 - fi / float(RIDGE_N));
+#else
+    float fog = exp(-fi * 0.06) * smoothstep(0.0, 0.62, 1.0 - fi / float(RIDGE_N));
+#endif
+#endif
+#if STYLE >= 8
+    /* строки, чей гребень заведомо ниже пикселя и ореол уже не достаёт, пропускаем без выборок */
+    if (yb + Hf * iz + 90.0 * uS < px.y) { prevY = yb; prevZ = z; continue; }
+    float u = 0.5 + ((px.x - uRes.x * 0.5) * z - uRidge.z) / Wf;
+#else
     float u = 0.5 + (px.x - cx) * z / Wf;
+#endif
     float a = rowA(u, fi);
     float yr = yb + a * Hf * iz;
     float lw = (0.55 + 0.85 * iz) * uS;
-    float fog = exp(-fi * 0.06) * smoothstep(0.0, 0.62, 1.0 - fi / float(RIDGE_N));
     float k = clamp(abs(u - 0.5) * 2.0, 0.0, 1.0);
-#if STYLE == 7
+#if STYLE >= 7
     float pulse = uPlus.x * 0.35 * exp(-fi * 0.5);           // передние строки чуть вспыхивают на ударе
     float depth = 1.0 - fog;
     float kr = kickRow(fi);                                  // бит, записанный в эту строку, уходит с ней вдаль
@@ -372,8 +435,14 @@ vec3 visual(vec3 col, vec2 px) {
       vec3 c = heat(a, k);
       float d = abs(px.y - yr);
       float below = 1.0 - smoothstep(yr - 2.0, yr, px.y);
+#if STYLE == 9
+      below *= uVis;                                               // стена гаснет целиком, без «тетрадных» полос
+      vec3 res = mix(col, col * 0.3, below * (0.7 * fog + 0.1));   // стена закрывает весь экран — фон не гасим целиком
+      res *= 1.0 - 0.15 * (1.0 - clear);                           // под текстом темнее — он читается
+#else
       vec3 res = mix(col, col * 0.14, below * (0.9 * fog + 0.08));
-#if STYLE == 7
+#endif
+#if STYLE >= 7
       /* твёрдый склон: тёмный цветной камень, светлее к вершинам, свет у гребня и светотень по наклону */
       float hRel = clamp((px.y - yb) / max(Hf * iz, 1.0), 0.0, 1.0);   // высота точки склона над подножием (0..1)
       float dB = max(yr - px.y, 0.0);
@@ -383,48 +452,58 @@ vec3 visual(vec3 col, vec2 px) {
       float lit = 0.5 + 0.5 * clamp(slope * 1.4, -1.0, 1.0);
       vec3 rock = mix(uC2, uC3, 0.4) * (0.03 + 0.07 * hRel);
       res = mix(res, res * 0.55 + rock, below * fog * 0.85);
-      res += mix(c, uC2, 0.35) * rim * (0.07 + 0.5 * a) * lit * below * fog * uVis;
+      res += mix(c, uC2, 0.35) * rim * (0.07 + 0.5 * a) * lit * below * fog * uVis * clear;
       /* туман в низинах: стелется у подножий и медленно колышется, вершины торчат над ним */
       float mist = exp(-hRel * 4.5) * (0.3 + 0.7 * smoothstep(0.0, 0.6, fi / float(RIDGE_N)));
       mist *= 0.65 + 0.35 * sin(u * 21.0 + uTime * 0.23 + fi * 0.9) * sin(u * 8.0 - uTime * 0.15 + fi * 0.4);
       res = mix(res, hazeC * (0.22 + 0.08 * uRidge.w), clamp(mist, 0.0, 1.0) * below * 0.6 * (0.35 + 0.65 * fog));
       /* вспышка бита: вся строка светится и уходит с рельефом к горизонту */
-      res += c * kr * (0.05 + 0.25 * rim) * below * fog * uVis;
+      res += c * kr * (0.05 + 0.25 * rim) * below * fog * uVis * clear;
       c = mix(c, hazeC, depth * 0.4);
       c = mix(c, mix(c, vec3(1.0), 0.6), clamp(kr, 0.0, 1.0));
 #endif
+#if STYLE != 9
       if (uRidge.x > 0.5) {
         /* продольные линии по поверхности между соседними рядами */
         float tt = clamp((px.y - prevY) / max(yr - prevY, 1.0), 0.0, 1.0);
         float zz = mix(prevZ, z, tt);
+#if STYLE == 8
+        float uu = 0.5 + ((px.x - uRes.x * 0.5) * zz - uRidge.z) / Wf;
+#else
         float uu = 0.5 + (px.x - cx) * zz / Wf;
+#endif
         float gpx = abs(fract(uu * 36.0 + 0.5) - 0.5) / 36.0 * Wf / zz;
         float gf = exp(-fi * 0.05);
         res += mix(c, uC2, 0.35) * band(gpx, 0.5 * uS) * 0.55 * gf * below
              * smoothstep(0.0, 0.08, uu) * (1.0 - smoothstep(0.92, 1.0, uu));
         res += c * 0.035 * gf * below * (0.4 + a);
       }
+#endif
+#if STYLE == 9
+      float act = (0.22 + 0.78 * smoothstep(0.02, 0.3, a)) * 0.8 * clear;   // стена во весь экран: ровные места тише
+#else
       float act = 0.3 + 0.7 * smoothstep(0.0, 0.12, a);
-#if STYLE == 7
+#endif
+#if STYLE >= 7
       float soft = 0.7 + 1.4 * depth;                        // дальние линии мягче — как не в фокусе
       float line = 1.0 - smoothstep(lw - soft, lw + soft, d);
       float boost = 1.0 + 0.45 * exp(-fi * 0.9) + pulse + kr * 2.2;   // свежая строка — «перо»; строка с битом горит
       res += mix(c, vec3(1.0), 0.2 * iz) * (line * (0.3 + 0.7 * fog) + exp(-d / (5.0 * uS)) * (0.18 + 0.35 * a) * fog) * act * boost * uVis;
-      return res + glow * uVis;
+      return res + glow * uVis * clear;
 #else
       res += mix(c, vec3(1.0), 0.2 * iz) * (band(d, lw) * (0.3 + 0.7 * fog) + exp(-d / (5.0 * uS)) * (0.18 + 0.35 * a) * fog) * act * uVis;
       return res;
 #endif
     }
-#if STYLE == 7
+#if STYLE >= 7
     /* строка ниже пикселя: её линия светит вверх мягким ореолом */
     float up = px.y - yr;
     glow += mix(heat(a, k), hazeC, depth * 0.4) * exp(-up / ((3.0 + 9.0 * iz) * uS)) * (0.035 + 0.4 * a * a) * fog * (1.0 + pulse + kr * 1.6);
 #endif
     prevY = yr; prevZ = z;
   }
-#if STYLE == 7
-  return col + glow * uVis;
+#if STYLE >= 7
+  return col + glow * uVis * clear;
 #else
   return col;
 #endif
@@ -630,7 +709,8 @@ void main() {
         const a = disp[j];
         if (a < thr || a < disp[j - 5] || a < disp[j + 5]) continue;   // только локальные пики
         if (Math.random() > (0.25 + (a - thr) / (mx - thr + 0.05)) * rate * dt) continue;
-        const u = (j + 0.5) / 256, env = smooth(0, 0.14, u) * (1 - smooth(0.86, 1, u));
+        /* у широких режимов края не гаснут — гребни по всей ширине */
+        const u = (j + 0.5) / 256, env = g.wide ? 1 - 0.05 * Math.abs(u - 0.5) : smooth(0, 0.14, u) * (1 - smooth(0.86, 1, u));
         if (env < 0.2) continue;
         this.list.push({
           x: g.cx + (u - 0.5) * g.Wf, y: g.front + a * env * g.Hf,
@@ -879,14 +959,14 @@ void main() {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.texSpec);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, TW, 1, gl.RGBA, gl.UNSIGNED_BYTE, audio.tex);
-      if ((style === 'ridge' || style === 'ridge2') && this.histSeen !== audio.histPushes) {
+      if (RIDGES[style] && this.histSeen !== audio.histPushes) {
         gl.bindTexture(gl.TEXTURE_2D, this.texHist);
         if (audio.histPushes - this.histSeen === 1) {
           gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, audio.histHead, TW, 1, gl.LUMINANCE, gl.UNSIGNED_BYTE, audio.histRow);
         } else {
           gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, TW, HROWS, gl.LUMINANCE, gl.UNSIGNED_BYTE, audio.hist);
         }
-        if (style === 'ridge2') {
+        if (PLUS[style]) {
           gl.bindTexture(gl.TEXTURE_2D, this.texKick);
           gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, HROWS, 1, gl.LUMINANCE, gl.UNSIGNED_BYTE, audio.histKick);
         }
@@ -965,7 +1045,7 @@ void main() {
         gl.uniform2f(u.uFluidTexel, tx[0], tx[1]);
         gl.uniform4f(u.uFluidK, F.exposure, 0, 0.9, 0);
       }
-      if (style === 'ridge' || style === 'ridge2' || fl) {
+      if (RIDGES[style] || fl) {
         const mr = st.meta;
         if (mr) gl.uniform4f(u.uMeta, mr.l * k, H - mr.b * k, mr.r * k, H - mr.t * k);
         else gl.uniform4f(u.uMeta, -1e5, -1e5, -1e5 + 1, -1e5 + 1);
@@ -973,16 +1053,23 @@ void main() {
       if (style === 'aurora') gl.uniform4f(u.uGeo, H * 0.115, H * 0.15, 0, 0);
       else if (style === 'ring') { const ref = Math.min(shw, shh) * 2; gl.uniform4f(u.uGeo, ref * 0.035 + 4 * uS, ref * 0.21, 0, 0); }
       else if (style === 'bars') { const bwid = W * 0.62; gl.uniform4f(u.uGeo, H * 0.1, H * 0.16, bwid, U.clamp(Math.round(bwid / (24 * uS) / 2) * 2, 24, 96)); }
-      else if (style === 'ridge' || style === 'ridge2') {
-        if (style === 'ridge2') {
+      else if (RIDGES[style]) {
+        if (PLUS[style]) {
           gl.uniform4f(u.uPlus, kick, pulse, 0, 0);
           gl.activeTexture(gl.TEXTURE5); gl.bindTexture(gl.TEXTURE_2D, this.texKick);
           gl.uniform1i(u.uKickH, 5);
         }
-        gl.uniform4f(u.uGeo, H * 0.31, H * 0.035, H * 0.2, W * 1.06);
+        /* горизонт: дальний край, первая строка, высота пиков, ширина; стена: верх, низ, высота пиков, ширина */
+        if (style === 'wall') {
+          gl.uniform4f(u.uGeo, H * 0.97, H * 0.03, H * 0.1, W * 1.06);
+          const cr = st.clock;
+          if (cr) gl.uniform4f(u.uMeta2, cr.l * k, H - cr.b * k, cr.r * k, H - cr.t * k);
+          else gl.uniform4f(u.uMeta2, -1e5, -1e5, -1e5 + 1, -1e5 + 1);
+        } else gl.uniform4f(u.uGeo, H * 0.31, H * 0.035, H * 0.2, W * 1.06);
         const camX = (S.parallax ? st.mouse.x * W * 0.035 : 0) + Math.sin(this.time * 0.07) * W * 0.012;
         this.camX = camX;
-        gl.uniform4f(u.uRidge, S.ridgeStyle === 'grid' ? 1 : 0, S.ridgeSun ? 1 : 0, camX, bass * pulse);
+        const wall = style === 'wall';
+        gl.uniform4f(u.uRidge, S.ridgeStyle === 'grid' && !wall ? 1 : 0, S.ridgeSun && !wall ? 1 : 0, camX, bass * pulse);
         const mr = st.meta;
         /* в центральной раскладке плеер закрывает точку схода — солнце садится сбоку, правее текста */
         const side = S.layout === 'center' && mr;
@@ -1039,8 +1126,9 @@ void main() {
       }
 
       /* ---- «Горизонт+»: искры с пиков ---- */
-      if (style === 'ridge2') {
-        const g = { cx: W * 0.5 + (this.camX || 0), Wf: W * 1.06, front: H * 0.035, Hf: H * 0.2 };
+      if (PLUS[style]) {
+        const wall = style === 'wall';
+        const g = { cx: W * 0.5 + (this.camX || 0), Wf: W * 1.06, front: H * (wall ? 0.03 : 0.035), Hf: H * (wall ? 0.1 : 0.2), wide: style !== 'ridge2' };
         this.sparks.update(dt, audio.disp, g, uS, kick, st.visAlpha);
         if (this.sparks.list.length) {
           const data = this.sparks.fill(H, pal);

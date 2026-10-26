@@ -8,6 +8,16 @@
   const $ = id => document.getElementById(id);
 
   const pad2 = n => (n < 10 ? '0' : '') + n;
+  /* общий прямоугольник видимых элементов (у display:none он нулевой) */
+  function unionRect(els) {
+    let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
+    for (const el of els) {
+      const q = el.getBoundingClientRect();
+      if (q.width < 1 || q.height < 1) continue;
+      l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); b = Math.max(b, q.bottom);
+    }
+    return r > l ? { l, t, r, b } : null;
+  }
 
   /* разбиваем на графемы (эмодзи и диакритика не разваливаются) */
   function graphemes(text) {
@@ -43,7 +53,7 @@
       ['playerInner', 'art', 'artTilt', 'cover', 'coverSpin', 'coverA', 'coverB', 'coverSheen',
         'vinyl', 'vinylLabel', 'vinylCanvas', 'meta', 'title', 'artist', 'album',
         'progress', 'tCur', 'tDur', 'pBar', 'pFill', 'pHead', 'ctlPrev', 'ctlNext', 'ctlHint',
-        'clockTime', 'cH', 'cM', 'cAp', 'clockDate', 'clockHint', 'mcTime', 'mcDate'
+        'clockTime', 'cH', 'cM', 'cAp', 'clockDate', 'clockHint', 'mcTime', 'mcDate', 'resume', 'resumeLabel', 'resumeTrack'
       ].forEach(id => { e[id] = $(id); });
       this.body = document.body;
       this.S = RSN.settings;
@@ -103,7 +113,7 @@
       const pick = (prefix, val, all) => all.forEach(v => b.classList.toggle(prefix + v, v === val));
       pick('layout-', S.layout, ['center', 'left', 'right']);
       pick('cover-', S.coverStyle, ['card', 'vinyl', 'disc']);
-      pick('vis-', S.visualizer, ['fluid', 'aurora', 'ring', 'bars', 'ridge', 'ridge2', 'none']);
+      pick('vis-', S.visualizer, ['fluid', 'aurora', 'ring', 'bars', 'ridge', 'ridge2', 'ridge3', 'wall', 'none']);
       pick('font-', S.font, ['manrope', 'unbounded', 'serif', 'system']);
       pick('clock-', S.clockMode, ['auto', 'idle', 'off']);
       b.classList.toggle('vinyl-color', S.vinylColor === 'color');
@@ -392,6 +402,7 @@
         this.hintFlipUntil = performance.now() + 2500;
         fire('playpause');
       });
+      e.resume.addEventListener('click', ev => { ev.stopPropagation(); tap(e.resume); fire('resume'); });
       e.pBar.addEventListener('click', ev => {
         if (!this.body.classList.contains('seek-on') || !(this.dur > 0)) return;
         const r = e.pBar.getBoundingClientRect();
@@ -411,6 +422,18 @@
       if (this.ctlIn && !inside) this.ctlShownUntil = now + 1200;
       this.ctlIn = inside;
       this.ctlMoved = now;
+    }
+
+    /* кнопка «Продолжить» на экране с часами: track — последний игравший трек или null */
+    setResume(track) {
+      const e = this.el;
+      this.body.classList.toggle('can-resume', !!track);
+      e.resumeLabel.textContent = RSN.i18n.t('resume');
+      e.resumeTrack.textContent = track ? [track.artist, track.title].filter(Boolean).join(' — ') : '';
+    }
+    resumeFailed() {
+      const b = this.el.resume;
+      b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope');
     }
 
     /* ok — помощник доступен; seek — умеет перематывать; mode — hover | always | off */
@@ -471,6 +494,11 @@
         const m = this.el.meta.getBoundingClientRect();
         this.metaRect = { l: m.left, t: m.top, r: m.right, b: m.bottom };
       } else this.metaRect = null;
+      /* часы (мини в углу или большие в простое) — «Стена» во весь экран гасит под ними линии */
+      const e = this.el;
+      this.clockRect = S.visualizer !== 'wall' ? null
+        : f > 0.5 ? (S.clockMode === 'auto' ? unionRect([e.mcTime, e.mcDate]) : null)
+        : unionRect([e.clockTime, e.clockDate, e.resume]);
       sh.cx = U.lerp(pcx, ccx, f);
       sh.cy = U.lerp(pcy, ccy, f);
       sh.hw = Math.max(4, U.lerp(phw, chw, f));

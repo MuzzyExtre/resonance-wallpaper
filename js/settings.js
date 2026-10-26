@@ -8,6 +8,7 @@
 
   const S = (RSN.settings = {
     schemeColor: [112, 92, 250],
+    idleBg: 'last',
     layout: 'center',
     coverStyle: 'vinyl',
     vinylColor: 'black',
@@ -54,7 +55,8 @@
     coverstyle: { key: 'coverStyle', vals: { 1: 'card', 2: 'vinyl', 3: 'disc' }, lively: [1, 2, 3] },
     vinylcolor: { key: 'vinylColor', vals: { 1: 'black', 2: 'color' }, lively: [1, 2] },
     /* 5 — бывший Milkdrop: у кого он был выбран, получат «Жидкий свет» */
-    visualizer: { key: 'visualizer', vals: { 4: 'ridge', 7: 'ridge2', 6: 'fluid', 1: 'aurora', 2: 'ring', 3: 'bars', 5: 'fluid', 0: 'none' }, lively: [4, 7, 6, 1, 2, 3, 0] },
+    visualizer: { key: 'visualizer', vals: { 4: 'ridge', 7: 'ridge2', 8: 'ridge3', 9: 'wall', 6: 'fluid', 1: 'aurora', 2: 'ring', 3: 'bars', 5: 'fluid', 0: 'none' }, lively: [4, 7, 8, 9, 6, 1, 2, 3, 0] },
+    idlebg:     { key: 'idleBg',     vals: { 1: 'last', 2: 'color' }, lively: [1, 2] },
     language:   { key: 'language',   vals: { 0: 'auto', 1: 'ru', 2: 'en' }, lively: [0, 1, 2] },
     controls:   { key: 'controls',   vals: { 1: 'hover', 2: 'always', 0: 'off' }, lively: [1, 2, 0] },
     ridgestyle: { key: 'ridgeStyle', vals: { 1: 'lines', 2: 'grid', 3: 'lines' }, lively: [1, 2] },

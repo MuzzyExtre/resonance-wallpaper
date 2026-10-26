@@ -1,6 +1,6 @@
 # Resonance
 
-Музыкальные живые обои для [Wallpaper Engine](https://store.steampowered.com/app/431960/). Обложка и название трека берутся из любого плеера (Яндекс Музыка, Spotify, браузер), фон собирается из цветов обложки, звук превращается в визуализацию: «Горизонт», «Горизонт+», «Жидкий свет» и другие.
+Музыкальные живые обои для [Wallpaper Engine](https://store.steampowered.com/app/431960/). Обложка и название трека берутся из любого плеера (Яндекс Музыка, Spotify, браузер), фон собирается из цветов обложки, звук превращается в визуализацию: «Горизонт», «Горизонт+», «Стена», «Жидкий свет» и другие.
 
 ![Resonance](preview.jpg)
 
@@ -8,7 +8,7 @@
 
 ## Кнопки на обложке — Resonance Control
 
-Обои умеют ставить трек на паузу и переключать его кликом по обложке, но Wallpaper Engine не даёт обоям управлять плеерами. Это делает маленькая программа-помощник из папки [`control`](control).
+Обои умеют ставить трек на паузу и переключать его кликом по обложке, а когда музыка остановлена — продолжать последний трек кнопкой под часами. Но Wallpaper Engine не даёт обоям управлять плеерами. Это делает маленькая программа-помощник из папки [`control`](control).
 
 - Слушает только `127.0.0.1:57391` и принимает команды только от Wallpaper Engine и Lively.
 - Управляет тем плеером, чей трек показан на обоях (через системный медиа-API Windows).
@@ -45,7 +45,7 @@
 
 # Resonance (English)
 
-Music live wallpaper for [Wallpaper Engine](https://store.steampowered.com/app/431960/). Cover and track info come from any player (Spotify, browsers, Yandex Music), the background is made from the cover colors, and the audio drives the visualizers: Horizon, Horizon+, Liquid light and more.
+Music live wallpaper for [Wallpaper Engine](https://store.steampowered.com/app/431960/). Cover and track info come from any player (Spotify, browsers, Yandex Music), the background is made from the cover colors, and the audio drives the visualizers: Horizon, Horizon+, Wall, Liquid light and more.
 
 **Install:** [subscribe on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266) — the wallpaper downloads into Wallpaper Engine.
 

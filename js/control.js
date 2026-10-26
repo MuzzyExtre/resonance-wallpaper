@@ -13,6 +13,7 @@
   const C = (RSN.control = {
     ok: false,
     seek: false,
+    v: 0,
     busy: false,
     onChange: null,
 
@@ -27,6 +28,7 @@
         clearTimeout(timer);
         const j = await r.json();
         ok = !!j.ok; seek = !!j.seek;
+        this.v = +j.v || 0;
       } catch (e) { ok = false; }
       this.busy = false;
       if (ok !== this.ok || seek !== this.seek) {
@@ -38,16 +40,24 @@
 
     /* с командой уходит показанный трек — помощник найдёт именно этот плеер,
        а не тот, где звук включали последним (например, YouTube) */
-    send(cmd, query) {
-      if (!this.ok) return;
-      const M = RSN.media;
-      const who = 'title=' + encodeURIComponent(M.title || '') + '&artist=' + encodeURIComponent(M.artist || '');
-      fetch(BASE + cmd + '?' + who + (query ? '&' + query : ''), { cache: 'no-store' }).catch(() => {
-        this.ok = false;
-        if (this.onChange) this.onChange();
-      });
+    /* промис: выполнил ли плеер команду */
+    send(cmd, query, track) {
+      if (!this.ok) return Promise.resolve(false);
+      const t = track || RSN.media;
+      const who = 'title=' + encodeURIComponent(t.title || '') + '&artist=' + encodeURIComponent(t.artist || '');
+      return fetch(BASE + cmd + '?' + who + (query ? '&' + query : ''), { cache: 'no-store' })
+        .then(r => r.json()).then(j => !!j.ok)
+        .catch(() => {
+          this.ok = false;
+          if (this.onChange) this.onChange();
+          return false;
+        });
     }
   });
+
+  /* продолжить остановленный трек. Помощник с v3 включает только этот плеер (/resume);
+     старый умеет лишь «пауза/плей» */
+  C.resume = track => C.send(C.v >= 3 ? 'resume' : 'playpause', null, track);
 
   /* помощник может запуститься позже обоев — проверяем периодически */
   C.ping();

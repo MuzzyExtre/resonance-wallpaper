@@ -46,6 +46,9 @@
 				"ui_rs_hdr_perf" : "<br><b>PERFORMANCE</b>",
 				"ui_rs_hdr_sound" : "<br><b>SOUND</b>",
 				"ui_rs_hqcovers" : "Sharp covers<br><small>track names are looked up on Deezer and iTunes</small>",
+				"ui_rs_idlebg" : "Background when idle",
+				"ui_rs_idlebg_color" : "Custom color",
+				"ui_rs_idlebg_last" : "Last track",
 				"ui_rs_lang_auto" : "System",
 				"ui_rs_lang_en" : "English",
 				"ui_rs_lang_ru" : "Русский",
@@ -66,7 +69,7 @@
 				"ui_rs_ridge_lines" : "Lines",
 				"ui_rs_ridgestyle" : "Terrain",
 				"ui_rs_ridgesun" : "Sun",
-				"ui_rs_scheme" : "Background color when idle",
+				"ui_rs_scheme" : "Background color",
 				"ui_rs_sensitivity" : "Sensitivity, %",
 				"ui_rs_shockwaves" : "Shockwaves",
 				"ui_rs_showalbum" : "Album",
@@ -85,7 +88,9 @@
 				"ui_rs_vis_off" : "None",
 				"ui_rs_vis_ridge" : "Horizon",
 				"ui_rs_vis_ridge2" : "Horizon+",
-				"ui_rs_vis_ring" : "Ring"
+				"ui_rs_vis_ridge3" : "Horizon+ Wide",
+				"ui_rs_vis_ring" : "Ring",
+				"ui_rs_vis_wall" : "Wall"
 			},
 			"ru-ru" : 
 			{
@@ -127,6 +132,9 @@
 				"ui_rs_hdr_perf" : "<br><b>ПРОИЗВОДИТЕЛЬНОСТЬ</b>",
 				"ui_rs_hdr_sound" : "<br><b>ЗВУК</b>",
 				"ui_rs_hqcovers" : "Чёткие обложки<br><small>название трека ищется в Deezer и iTunes</small>",
+				"ui_rs_idlebg" : "Фон без музыки",
+				"ui_rs_idlebg_color" : "Свой цвет",
+				"ui_rs_idlebg_last" : "Последний трек",
 				"ui_rs_lang_auto" : "Как в системе",
 				"ui_rs_lang_en" : "English",
 				"ui_rs_lang_ru" : "Русский",
@@ -147,7 +155,7 @@
 				"ui_rs_ridge_lines" : "Линии",
 				"ui_rs_ridgestyle" : "Рельеф",
 				"ui_rs_ridgesun" : "Солнце",
-				"ui_rs_scheme" : "Цвет фона без музыки",
+				"ui_rs_scheme" : "Цвет фона",
 				"ui_rs_sensitivity" : "Чувствительность, %",
 				"ui_rs_shockwaves" : "Ударные волны",
 				"ui_rs_showalbum" : "Альбом",
@@ -166,7 +174,9 @@
 				"ui_rs_vis_off" : "Нет",
 				"ui_rs_vis_ridge" : "Горизонт",
 				"ui_rs_vis_ridge2" : "Горизонт+",
-				"ui_rs_vis_ring" : "Кольцо"
+				"ui_rs_vis_ridge3" : "Горизонт+ широкий",
+				"ui_rs_vis_ring" : "Кольцо",
+				"ui_rs_vis_wall" : "Стена"
 			}
 		},
 		"properties" : 
@@ -211,30 +221,30 @@
 			},
 			"bgbrightness" : 
 			{
-				"index" : 22,
+				"index" : 24,
 				"max" : 200,
 				"min" : 20,
-				"order" : 122,
+				"order" : 124,
 				"text" : "ui_rs_bgbrightness",
 				"type" : "slider",
 				"value" : 100
 			},
 			"bgmotion" : 
 			{
-				"index" : 21,
+				"index" : 23,
 				"max" : 300,
 				"min" : 0,
-				"order" : 121,
+				"order" : 123,
 				"text" : "ui_rs_bgmotion",
 				"type" : "slider",
 				"value" : 100
 			},
 			"bgsaturation" : 
 			{
-				"index" : 23,
+				"index" : 25,
 				"max" : 200,
 				"min" : 0,
-				"order" : 123,
+				"order" : 125,
 				"text" : "ui_rs_bgsaturation",
 				"type" : "slider",
 				"value" : 100
@@ -242,15 +252,15 @@
 			"clock24" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 33,
-				"order" : 133,
+				"index" : 35,
+				"order" : 135,
 				"text" : "ui_rs_clock24",
 				"type" : "bool",
 				"value" : true
 			},
 			"clockmode" : 
 			{
-				"index" : 32,
+				"index" : 34,
 				"options" : 
 				[
 					{
@@ -266,14 +276,14 @@
 						"value" : 0
 					}
 				],
-				"order" : 132,
+				"order" : 134,
 				"text" : "ui_rs_clockmode",
 				"type" : "combo",
 				"value" : 1
 			},
 			"controls" : 
 			{
-				"index" : 37,
+				"index" : 39,
 				"options" : 
 				[
 					{
@@ -289,15 +299,15 @@
 						"value" : 0
 					}
 				],
-				"order" : 137,
+				"order" : 139,
 				"text" : "ui_rs_controls",
 				"type" : "combo",
 				"value" : 1
 			},
 			"controlshelp" : 
 			{
-				"index" : 38,
-				"order" : 138,
+				"index" : 40,
+				"order" : 140,
 				"text" : "ui_rs_controls_help",
 				"type" : "text"
 			},
@@ -326,8 +336,8 @@
 			},
 			"debug" : 
 			{
-				"index" : 41,
-				"order" : 141,
+				"index" : 43,
+				"order" : 143,
 				"text" : "ui_rs_debug",
 				"type" : "bool",
 				"value" : false
@@ -381,10 +391,10 @@
 			},
 			"grain" : 
 			{
-				"index" : 25,
+				"index" : 27,
 				"max" : 100,
 				"min" : 0,
-				"order" : 125,
+				"order" : 127,
 				"text" : "ui_rs_grain",
 				"type" : "slider",
 				"value" : 30
@@ -398,15 +408,15 @@
 			},
 			"hdrcontrol" : 
 			{
-				"index" : 36,
-				"order" : 136,
+				"index" : 38,
+				"order" : 138,
 				"text" : "ui_rs_hdr_control",
 				"type" : "text"
 			},
 			"hdrinfo" : 
 			{
-				"index" : 27,
-				"order" : 127,
+				"index" : 29,
+				"order" : 129,
 				"text" : "ui_rs_hdr_info",
 				"type" : "text"
 			},
@@ -419,8 +429,8 @@
 			},
 			"hdrperf" : 
 			{
-				"index" : 39,
-				"order" : 139,
+				"index" : 41,
+				"order" : 141,
 				"text" : "ui_rs_hdr_perf",
 				"type" : "text"
 			},
@@ -433,11 +443,30 @@
 			},
 			"hqcovers" : 
 			{
-				"index" : 35,
-				"order" : 135,
+				"index" : 37,
+				"order" : 137,
 				"text" : "ui_rs_hqcovers",
 				"type" : "bool",
 				"value" : true
+			},
+			"idlebg" : 
+			{
+				"index" : 21,
+				"options" : 
+				[
+					{
+						"label" : "ui_rs_idlebg_last",
+						"value" : 1
+					},
+					{
+						"label" : "ui_rs_idlebg_color",
+						"value" : 2
+					}
+				],
+				"order" : 121,
+				"text" : "ui_rs_idlebg",
+				"type" : "combo",
+				"value" : 1
 			},
 			"language" : 
 			{
@@ -507,25 +536,25 @@
 			},
 			"parallax" : 
 			{
-				"index" : 26,
-				"order" : 126,
+				"index" : 28,
+				"order" : 128,
 				"text" : "ui_rs_parallax",
 				"type" : "bool",
 				"value" : true
 			},
 			"particles" : 
 			{
-				"index" : 24,
+				"index" : 26,
 				"max" : 100,
 				"min" : 0,
-				"order" : 124,
+				"order" : 126,
 				"text" : "ui_rs_particles",
 				"type" : "slider",
 				"value" : 50
 			},
 			"quality" : 
 			{
-				"index" : 40,
+				"index" : 42,
 				"options" : 
 				[
 					{
@@ -541,14 +570,14 @@
 						"value" : 3
 					}
 				],
-				"order" : 140,
+				"order" : 142,
 				"text" : "ui_rs_quality",
 				"type" : "combo",
 				"value" : 1
 			},
 			"ridgestyle" : 
 			{
-				"condition" : "visualizer.value == 4 || visualizer.value == 7",
+				"condition" : "visualizer.value == 4 || visualizer.value == 7 || visualizer.value == 8",
 				"index" : 8,
 				"options" : 
 				[
@@ -568,7 +597,7 @@
 			},
 			"ridgesun" : 
 			{
-				"condition" : "visualizer.value == 4 || visualizer.value == 7",
+				"condition" : "visualizer.value == 4 || visualizer.value == 7 || visualizer.value == 8",
 				"index" : 9,
 				"order" : 109,
 				"text" : "ui_rs_ridgesun",
@@ -577,7 +606,9 @@
 			},
 			"schemecolor" : 
 			{
-				"order" : 0,
+				"condition" : "idlebg.value == 2",
+				"index" : 22,
+				"order" : 122,
 				"text" : "ui_rs_scheme",
 				"type" : "color",
 				"value" : "0.44 0.36 0.98"
@@ -603,16 +634,16 @@
 			"showalbum" : 
 			{
 				"condition" : "showinfo.value == true",
-				"index" : 30,
-				"order" : 130,
+				"index" : 32,
+				"order" : 132,
 				"text" : "ui_rs_showalbum",
 				"type" : "bool",
 				"value" : true
 			},
 			"showcover" : 
 			{
-				"index" : 28,
-				"order" : 128,
+				"index" : 30,
+				"order" : 130,
 				"text" : "ui_rs_showcover",
 				"type" : "bool",
 				"value" : true
@@ -620,24 +651,24 @@
 			"showdate" : 
 			{
 				"condition" : "clockmode.value != 0",
-				"index" : 34,
-				"order" : 134,
+				"index" : 36,
+				"order" : 136,
 				"text" : "ui_rs_showdate",
 				"type" : "bool",
 				"value" : true
 			},
 			"showinfo" : 
 			{
-				"index" : 29,
-				"order" : 129,
+				"index" : 31,
+				"order" : 131,
 				"text" : "ui_rs_showinfo",
 				"type" : "bool",
 				"value" : true
 			},
 			"showprogress" : 
 			{
-				"index" : 31,
-				"order" : 131,
+				"index" : 33,
+				"order" : 133,
 				"text" : "ui_rs_showprogress",
 				"type" : "bool",
 				"value" : true
@@ -684,6 +715,14 @@
 					{
 						"label" : "ui_rs_vis_ridge2",
 						"value" : 7
+					},
+					{
+						"label" : "ui_rs_vis_ridge3",
+						"value" : 8
+					},
+					{
+						"label" : "ui_rs_vis_wall",
+						"value" : 9
 					},
 					{
 						"label" : "ui_rs_vis_fluid",
