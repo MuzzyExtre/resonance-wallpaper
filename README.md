@@ -4,7 +4,7 @@
 
 ![Resonance](preview.jpg)
 
-**Установка:** подпишитесь в Мастерской Steam — ссылка появится здесь после публикации.
+**Установка:** [подпишитесь в Мастерской Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266) — обои скачаются и появятся в Wallpaper Engine.
 
 ## Кнопки на обложке — Resonance Control
 
@@ -47,7 +47,7 @@
 
 Music live wallpaper for [Wallpaper Engine](https://store.steampowered.com/app/431960/). Cover and track info come from any player (Spotify, browsers, Yandex Music), the background is made from the cover colors, and the audio drives the visualizers: Horizon, Horizon+, Liquid light and more.
 
-**Install:** subscribe on the Steam Workshop — the link will appear here after publishing.
+**Install:** [subscribe on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266) — the wallpaper downloads into Wallpaper Engine.
 
 **Cover buttons (Resonance Control):** Wallpaper Engine does not let wallpapers control players, so a tiny helper in [`control`](control) does it. It listens on `127.0.0.1:57391` only, accepts commands only from Wallpaper Engine and Lively, controls the player whose track is shown, and never goes online. Install: download the repo, run `control\install.cmd` (builds from source with the built-in .NET compiler and adds itself to startup). Uninstall: `control\uninstall.cmd`.
 
