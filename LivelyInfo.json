@@ -9,6 +9,6 @@
   "Contact": null,
   "Type": 2,
   "FileName": "index.html",
-  "Arguments": null,
+  "Arguments": "--system-nowplaying",
   "IsAbsolutePath": false
 }
