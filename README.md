@@ -1,10 +1,22 @@
 # Resonance
 
-Музыкальные живые обои для [Wallpaper Engine](https://store.steampowered.com/app/431960/). Обложка и название трека берутся из любого плеера (Яндекс Музыка, Spotify, браузер), фон собирается из цветов обложки, звук превращается в визуализацию: «Горизонт», «Жидкий свет», «Аврора» и другие. Если музыка играет на Яндекс Станции, обои показывают и её.
+Музыкальные живые обои для [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) и [Lively Wallpaper](https://apps.microsoft.com/detail/9NTM2QC6QWS7). Обложка и название трека берутся из любого плеера (Яндекс Музыка, Spotify, браузер), фон собирается из цветов обложки, звук превращается в визуализацию: «Горизонт», «Жидкий свет», «Аврора» и другие. Если музыка играет на Яндекс Станции, обои показывают и её.
 
 ![Resonance](preview.jpg)
 
-**Установка:** [подпишитесь в Мастерской Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266) — обои скачаются и появятся в Wallpaper Engine.
+## Установка
+
+Все файлы — в [последнем релизе](https://github.com/MuzzyExtre/resonance-wallpaper/releases/latest).
+
+**Wallpaper Engine** ([Steam](https://store.steampowered.com/app/431960/Wallpaper_Engine/), платная):
+- проще всего — [подписаться в Мастерской Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266), обои скачаются сами и будут обновляться;
+- или без Мастерской: скачайте `Resonance-WallpaperEngine.zip`, распакуйте, в Wallpaper Engine нажмите «Открыть обои» → «Открыть из файла» и выберите `project.json` из папки.
+
+**Lively Wallpaper** ([Microsoft Store](https://apps.microsoft.com/detail/9NTM2QC6QWS7), бесплатная): скачайте `Resonance-Lively.zip` и, не распаковывая, перетащите его в окно Lively. Не добавляйте `index.html` через «+» — Lively откажется, потому что проект уже собран.
+
+**Кнопки на обложке и Яндекс Станция** (для обеих программ): скачайте `Resonance-Control.zip`, распакуйте и запустите `install.cmd` — подробнее ниже.
+
+Трек и обложка берутся из любого плеера, который показывается в системной панели медиа Windows (Яндекс Музыка, Spotify, браузер).
 
 ## Кнопки на обложке — Resonance Control
 
@@ -14,7 +26,7 @@
 - Управляет тем плеером, чей трек показан на обоях (через системный медиа-API Windows).
 - В интернет не ходит. Весь код — в [`control/ResonanceControl.cs`](control/ResonanceControl.cs).
 
-**Установить:** скачайте репозиторий (Code → Download ZIP), распакуйте и запустите `control\install.cmd`. Скрипт соберёт программу из исходников встроенным компилятором .NET и добавит её в автозагрузку.
+**Установить:** скачайте `Resonance-Control.zip` из релиза (или весь репозиторий), распакуйте и запустите `install.cmd` (в репозитории — `control\install.cmd`). Скрипт соберёт программу из исходников встроенным компилятором .NET и добавит её в автозагрузку.
 **Удалить:** `control\uninstall.cmd`.
 
 ## Яндекс Станция
@@ -63,7 +75,10 @@
 
 Music live wallpaper for [Wallpaper Engine](https://store.steampowered.com/app/431960/). Cover and track info come from any player (Spotify, browsers, Yandex Music), the background is made from the cover colors, and the audio drives the visualizers: Horizon, Liquid light, Aurora and more. Music playing on a Yandex Station speaker shows up too.
 
-**Install:** [subscribe on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266) — the wallpaper downloads into Wallpaper Engine.
+**Install** (all files in the [latest release](https://github.com/MuzzyExtre/resonance-wallpaper/releases/latest)):
+- **Wallpaper Engine** ([Steam](https://store.steampowered.com/app/431960/Wallpaper_Engine/)): [subscribe on the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3827476266), or unzip `Resonance-WallpaperEngine.zip` and use Open Wallpaper → Open from File → `project.json`.
+- **Lively Wallpaper** ([Microsoft Store](https://apps.microsoft.com/detail/9NTM2QC6QWS7)): drag `Resonance-Lively.zip` into the Lively window without unzipping it.
+- **Cover buttons and Yandex Station:** unzip `Resonance-Control.zip` and run `install.cmd`.
 
 **Cover buttons (Resonance Control):** Wallpaper Engine does not let wallpapers control players, so a tiny helper in [`control`](control) does it. It listens on `127.0.0.1:57391` only, accepts commands only from Wallpaper Engine and Lively, controls the player whose track is shown, and never goes online. Install: download the repo, run `control\install.cmd` (builds from source with the built-in .NET compiler and adds itself to startup). Uninstall: `control\uninstall.cmd`.
 
