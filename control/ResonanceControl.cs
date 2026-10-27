@@ -63,12 +63,54 @@ static class ResonanceControl
         return -1;
     }
 
+    // имя процесса клиента. Lively показывает обои через WebView2: запрос приходит от msedgewebview2,
+    // тогда смотрим, кто его запустил, и пишем «lively/msedgewebview2», если среди родителей есть Lively
     static string ClientName(TcpClient c)
     {
         int pid = ClientPid(((IPEndPoint)c.Client.RemoteEndPoint).Port);
         if (pid <= 0) return "?";
-        try { return Process.GetProcessById(pid).ProcessName.ToLowerInvariant(); }
+        string name;
+        try { name = Process.GetProcessById(pid).ProcessName.ToLowerInvariant(); }
         catch { return "?"; }
+        if (name != "msedgewebview2") return name;
+        int p = pid;
+        for (int i = 0; i < 6; i++)
+        {
+            p = ParentPid(p);
+            if (p <= 0) break;
+            try
+            {
+                string up = Process.GetProcessById(p).ProcessName.ToLowerInvariant();
+                if (up.Contains("lively")) return "lively/" + name;
+            }
+            catch { break; }
+        }
+        return name;
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    struct ProcessEntry
+    {
+        public int Size, Usage, ProcessId; public IntPtr HeapId; public int ModuleId, Threads, ParentId, PriorityBase, Flags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string ExeFile;
+    }
+    [DllImport("kernel32.dll", SetLastError = true)] static extern IntPtr CreateToolhelp32Snapshot(int flags, int pid);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] static extern bool Process32FirstW(IntPtr snap, ref ProcessEntry e);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] static extern bool Process32NextW(IntPtr snap, ref ProcessEntry e);
+    [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+
+    static int ParentPid(int pid)
+    {
+        IntPtr snap = CreateToolhelp32Snapshot(2, 0);   // TH32CS_SNAPPROCESS
+        if (snap == IntPtr.Zero || snap == new IntPtr(-1)) return -1;
+        try
+        {
+            ProcessEntry e = new ProcessEntry { Size = Marshal.SizeOf(typeof(ProcessEntry)) };
+            for (bool ok = Process32FirstW(snap, ref e); ok; ok = Process32NextW(snap, ref e))
+                if (e.ProcessId == pid) return e.ParentId;
+        }
+        finally { CloseHandle(snap); }
+        return -1;
     }
 
     static bool Allowed(string name)
